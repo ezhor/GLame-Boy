@@ -1,0 +1,15 @@
+﻿  glad.c
+  main.cpp
+main.obj : error LNK2019: símbolo externo _glfwInit sin resolver al que se hace referencia en la función "struct GLFWwindow * __cdecl init(void)" (?init@@YAPAUGLFWwindow@@XZ)
+main.obj : error LNK2019: símbolo externo _glfwTerminate sin resolver al que se hace referencia en la función _main
+main.obj : error LNK2019: símbolo externo _glfwWindowHint sin resolver al que se hace referencia en la función "struct GLFWwindow * __cdecl init(void)" (?init@@YAPAUGLFWwindow@@XZ)
+main.obj : error LNK2019: símbolo externo _glfwCreateWindow sin resolver al que se hace referencia en la función "struct GLFWwindow * __cdecl init(void)" (?init@@YAPAUGLFWwindow@@XZ)
+main.obj : error LNK2019: símbolo externo _glfwWindowShouldClose sin resolver al que se hace referencia en la función "void __cdecl renderLoop(struct GLFWwindow *)" (?renderLoop@@YAXPAUGLFWwindow@@@Z)
+main.obj : error LNK2019: símbolo externo _glfwSetWindowShouldClose sin resolver al que se hace referencia en la función "void __cdecl processInput(struct GLFWwindow *)" (?processInput@@YAXPAUGLFWwindow@@@Z)
+main.obj : error LNK2019: símbolo externo _glfwPollEvents sin resolver al que se hace referencia en la función "void __cdecl renderLoop(struct GLFWwindow *)" (?renderLoop@@YAXPAUGLFWwindow@@@Z)
+main.obj : error LNK2019: símbolo externo _glfwGetKey sin resolver al que se hace referencia en la función "void __cdecl processInput(struct GLFWwindow *)" (?processInput@@YAXPAUGLFWwindow@@@Z)
+main.obj : error LNK2019: símbolo externo _glfwMakeContextCurrent sin resolver al que se hace referencia en la función "struct GLFWwindow * __cdecl init(void)" (?init@@YAPAUGLFWwindow@@XZ)
+main.obj : error LNK2019: símbolo externo _glfwSwapBuffers sin resolver al que se hace referencia en la función "void __cdecl renderLoop(struct GLFWwindow *)" (?renderLoop@@YAXPAUGLFWwindow@@@Z)
+main.obj : error LNK2019: símbolo externo _glfwGetProcAddress sin resolver al que se hace referencia en la función "struct GLFWwindow * __cdecl init(void)" (?init@@YAPAUGLFWwindow@@XZ)
+D:\Code\lib\glfw3.lib : warning LNK4272: el tipo de máquina de biblioteca 'x64' está en conflicto con el tipo de máquina de destino 'x86'
+D:\Code\GLame-Boy_\Debug\GLame-Boy_.exe : fatal error LNK1120: 11 externos sin resolver
