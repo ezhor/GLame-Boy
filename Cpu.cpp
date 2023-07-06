@@ -11,8 +11,10 @@ Cpu::Cpu()
 
 void Cpu::loadInstructions()
 {
-	instructions.insert({ (unsigned short)0x00, {[]() {;}, 1} });
-	instructions.insert({ (unsigned short)0xC3, {[this]() {registers.setPC(bus.read16(registers.getPC() + 1));}, 1} });
+	instructions.insert({ (unsigned short)0x00, {1, []() {;}} }); // nop
+	instructions.insert({ (unsigned short)0xC3, {3, [this]() {registers.setPC(bus.read16(registers.getPC() + 1));}} }); // jp a16
+	instructions.insert({ (unsigned short)0x3E, {2, [this]() {registers.setA(bus.read(registers.getPC() + 1));}} }); // ld A,d8
+	instructions.insert({ (unsigned short)0xEA, {3, [this]() {bus.write(bus.read16(registers.getPC() + 1), registers.getA());}}}); // ld (a16),A
 
 	std::cout << instructions.size() << "/512 instructions implemented" << std::endl;
 }
@@ -26,9 +28,13 @@ bool Cpu::tick()
 	std::map<unsigned short, Instruction>::iterator iterator = instructions.find(opcode);
 
 	if (iterator != instructions.end()) {
+		unsigned short beforeInstructionPC = registers.getPC();
 		Instruction instruction = instructions.at(opcode);
+
 		instruction.implementation();
-		registers.incrementPC(instruction.lenght);
+		if (beforeInstructionPC == registers.getPC()) {
+			registers.incrementPC(instruction.lenght);
+		}
 		return true;
 	}
 	else {

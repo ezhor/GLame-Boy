@@ -7,8 +7,8 @@
 class Cpu
 {
 	struct Instruction {
-		std::function<void()> implementation;
 		int lenght = 0;
+		std::function<void()> implementation;
 	};
 
 public:
