@@ -152,7 +152,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="C:\Users\ezhor\AppData\Local\Temp\Rar$DRa27532.25671\src\glad.c" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Bus.cpp" />
+    <ClCompile Include="Cpu.cpp" />
+    <ClCompile Include="Registers.cpp" />
+    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Bus.h" />
+    <ClInclude Include="Cpu.h" />
+    <ClInclude Include="Registers.h" />
+    <ClInclude Include="Renderer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
