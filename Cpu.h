@@ -29,7 +29,6 @@ private:
 
 	unsigned char immediateData();
 	unsigned short immediateData16();
-	void setFlag(unsigned char flag, bool value);
 	void cp(unsigned char value);
 	void sub(unsigned char value);
 };

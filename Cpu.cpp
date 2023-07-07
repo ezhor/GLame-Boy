@@ -19,16 +19,11 @@ unsigned short Cpu::immediateData16()
 	return bus.read16(registers.getPC() + 1);
 }
 
-void Cpu::setFlag(unsigned char flag, bool value)
-{
-	registers.setF(value ? (registers.getF() | flag) : (registers.getF() & ~flag));
-}
-
 void Cpu::cp(unsigned char value) {
-	setFlag(Z_FLAG, registers.getA() == value);
-	setFlag(N_FLAG, true);
-	setFlag(H_FLAG, (registers.getA() & LOWER_NIBBLE) < (value & LOWER_NIBBLE));
-	setFlag(C_FLAG, registers.getA() < value);
+	registers.setFlag(Z_FLAG, registers.getA() == value);
+	registers.setFlag(N_FLAG, true);
+	registers.setFlag(H_FLAG, (registers.getA() & LOWER_NIBBLE) < (value & LOWER_NIBBLE));
+	registers.setFlag(C_FLAG, registers.getA() < value);
 
 }
 
