@@ -138,6 +138,11 @@ void Registers::incrementPC()
 	incrementPC(1);
 }
 
+bool Registers::getFlag(unsigned char flag)
+{
+	return (getF() & flag) == flag;
+}
+
 void Registers::setFlag(unsigned char flag, bool value)
 {
 	setF(value ? (getF() | flag) : (getF() & ~flag));

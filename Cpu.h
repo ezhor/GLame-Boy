@@ -4,6 +4,7 @@
 #include <map>
 #include <functional>
 
+#define NO_FLAG 0b00000000
 #define Z_FLAG 0b10000000
 #define N_FLAG 0b01000000
 #define H_FLAG 0b00100000
@@ -31,5 +32,6 @@ private:
 	unsigned short immediateData16();
 	void cp(unsigned char value);
 	void sub(unsigned char value);
+	void jp(unsigned short flag);
 };
 

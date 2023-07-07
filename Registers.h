@@ -27,6 +27,7 @@ public:
 	void setPC(unsigned short value);
 	void incrementPC(unsigned short increment);
 	void incrementPC();
+	bool getFlag(unsigned char flag);
 	void setFlag(unsigned char flag, bool value);
 
 private:
