@@ -3,12 +3,9 @@
 #include "Cpu.h"
 
 int main() {
-	//Bus bus = Bus();
 	//Renderer renderer = Renderer();
+	//renderer.run();
 	Cpu cpu = Cpu();
 	cpu.loadInstructions();
 	while (cpu.tick());
-
-	//bus.load();
-	//renderer.run();
 }

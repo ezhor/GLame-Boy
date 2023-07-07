@@ -5,13 +5,11 @@
 
 void Bus::load() {
 	std::ifstream file("D:\\Code\\GameBoy\\1.HelloWorld\\out\\hello-world.gb", std::ios::binary | std::ios::ate);
+	//std::ifstream file("D:\\Media\\Downloads\\tetris.gb", std::ios::binary | std::ios::ate);
 	std::streamsize size = file.tellg();
 	memory = std::vector<char>(0x10000);
 	file.seekg(0, std::ios::beg);
-	if (!file.read(memory.data(), size))
-	{
-		std::cout << "Error loading game file";
-	}
+	file.read(memory.data(), size);
 }
 
 unsigned char Bus::read(unsigned short location)
