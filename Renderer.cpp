@@ -9,23 +9,25 @@
 const char* vertexShaderSource =
 "#version 330 core \n"
 "layout (location = 0) in vec3 position;\n"
+"layout (location = 1) in vec3 inputColor;"
 "out vec4 vertexColor;"
 "void main()\n"
 "{\n"
 "gl_Position = vec4(position.xyz, 1.0);\n"
-"vertexColor = vec4(0.0, 0.5, 0.5, 1.0);\n"
+"vertexColor = vec4(inputColor.xyz, 1.0);\n"
 "}\0";
 
-const char* blueFragmentShaderSource =
+const char* triangleFragmentShaderSource =
 "#version 330 core\n"
+"in vec4 vertexColor;"
 "out vec4 fragmentColor;\n"
 "uniform vec4 uniformColor;"
 "void main()\n"
 "{\n"
-"fragmentColor = uniformColor;"
+"fragmentColor = uniformColor + vertexColor;"
 "}\0";
 
-const char* greenFragmentShaderSource =
+const char* rectangleFragmentShaderSource =
 "#version 330 core\n"
 "out vec4 fragmentColor;\n"
 "in vec4 vertexColor;\n"
@@ -120,9 +122,10 @@ unsigned int compileShaderProgram(const char* fragmentShaderSource) {
 
 unsigned int buildTriangle() {
 	float vertices[] = {
-		-0.4f, -0.4f, 0.0f,
-		0.4f, -0.4f, 0.0f,
-		0.0f, 0.4f, 0.0f
+		// positions			// colors
+		-0.4f, -0.4f, 0.0f,		0.5f, 0.0f, 0.0f,
+		0.4f, -0.4f, 0.0f,		0.0f, 0.5f, 0.0f,
+		0.0f, 0.4f, 0.0f,		0.0f, 0.0f, 0.5f
 	};
 	unsigned int indices[] = {
 		0, 1, 2
@@ -139,8 +142,11 @@ unsigned int buildTriangle() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
@@ -182,10 +188,10 @@ unsigned int buildRectangle() {
 
 void CalculateUniformColor(unsigned int shaderProgram) {
 	float time = glfwGetTime();
-	float blueValue = (sin(time) + 1.0f) / 2.0f;
+	float colorValue = (sin(time) + 1.0f) / 4.0f;
 	int uniformColor = glGetUniformLocation(shaderProgram, "uniformColor");
 	glUseProgram(shaderProgram);
-	glUniform4f(uniformColor, 0.0f, 0.5f, blueValue, 1.0f);
+	glUniform4f(uniformColor, colorValue, colorValue, colorValue, 1.0f);
 }
 
 void draw(unsigned int VAO, unsigned int shaderProgram) {
@@ -199,10 +205,10 @@ void renderLoop(GLFWwindow* window, unsigned int VAOs[], unsigned int shaderProg
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
 
-		glClear(GL_COLOR_BUFFER_BIT);
-		CalculateUniformColor(shaderPrograms[1]);
+		glClear(GL_COLOR_BUFFER_BIT);		
 		int size = sizeof(VAOs) / sizeof(VAOs[0]);
 		for (int i = 0; i < size; i++) {
+			CalculateUniformColor(shaderPrograms[1]);
 			draw(VAOs[i], shaderPrograms[i]);
 		}
 
@@ -219,8 +225,8 @@ void Renderer::run()
 		buildTriangle()
 	};
 	unsigned int shaderPrograms[]{
-		compileShaderProgram(greenFragmentShaderSource),
-		compileShaderProgram(blueFragmentShaderSource)
+		compileShaderProgram(rectangleFragmentShaderSource),
+		compileShaderProgram(triangleFragmentShaderSource)
 	};
 
 
