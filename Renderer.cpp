@@ -3,47 +3,15 @@
 #include <iostream>
 #include "Renderer.h"
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
+#define SCREEN_SCALE 4
+#define SCREEN_WIDTH 160
+#define SCREEN_HEIGHT 144
+#define SCALED_SCREEN_WIDTH SCREEN_WIDTH * SCREEN_SCALE
+#define SCALED_SCREEN_HEIGHT SCREEN_HEIGHT * SCREEN_SCALE
 
-const char* vertexShaderSource =
-"#version 330 core \n"
-"layout (location = 0) in vec3 position;\n"
-"layout (location = 1) in vec3 inputColor;"
-"out vec4 vertexColor;"
-"void main()\n"
-"{\n"
-"gl_Position = vec4(position.xyz, 1.0);\n"
-"vertexColor = vec4(inputColor.xyz, 1.0);\n"
-"}\0";
-
-const char* triangleFragmentShaderSource =
-"#version 330 core\n"
-"in vec4 vertexColor;"
-"out vec4 fragmentColor;\n"
-"uniform vec4 uniformColor;"
-"void main()\n"
-"{\n"
-"fragmentColor = uniformColor + vertexColor;"
-"}\0";
-
-const char* rectangleFragmentShaderSource =
-"#version 330 core\n"
-"out vec4 fragmentColor;\n"
-"in vec4 vertexColor;\n"
-"void main()\n"
-"{\n"
-"fragmentColor = vertexColor;"
-"}\0";
-
+unsigned char texture[SCREEN_WIDTH * SCREEN_HEIGHT * 3];
 bool polygonMode = true;
 bool pWassPressed = false;
-
-void processInput(GLFWwindow* window) {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-		glfwSetWindowShouldClose(window, true);
-	}
-}
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -53,13 +21,17 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		glPolygonMode(GL_FRONT_AND_BACK, polygonMode ? GL_FILL : GL_LINE);
 	}
 }
+void framebufferSizeCallback(GLFWwindow* window, int windowWidth, int windowHeight) {
+	int width = windowHeight * SCREEN_WIDTH / SCREEN_HEIGHT;
+	glViewport((windowWidth - width) / 2, 0, width, windowHeight);
+}
 
 GLFWwindow* initWindow() {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "GLame Boy", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCALED_SCREEN_WIDTH, SCALED_SCREEN_HEIGHT, "GLame Boy", NULL, NULL);
 
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -71,8 +43,9 @@ GLFWwindow* initWindow() {
 	}
 
 	glfwSetKeyCallback(window, keyCallback);
-	glClearColor(0.5f, 0.0f, 0.0f, 1.0f);
-	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+	glViewport(0, 0, SCALED_SCREEN_WIDTH, SCALED_SCREEN_HEIGHT);
 
 	return window;
 }
@@ -106,7 +79,42 @@ void checkShaderProgramLinkingError(int shaderProgram) {
 	}
 }
 
-unsigned int compileShaderProgram(const char* fragmentShaderSource) {
+void generateTexture() {
+	/*for (int i = 0; i < sizeof(texture) / sizeof(char); i += 3) {
+		texture[i] = i / 90;
+		texture[i + 1] = i / 90;
+		texture[i + 2] = i / 90;
+	}*/
+
+	texture[(160 / 2 + 160 * (144 / 2)) * 3 + 1] = 255;
+	unsigned int textureId;
+	glGenTextures(1, &textureId);
+	glBindTexture(GL_TEXTURE_2D, textureId);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCREEN_WIDTH, SCREEN_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, texture);
+}
+
+unsigned int compileShaderProgram() {
+	const char* vertexShaderSource =
+		"#version 330 core \n"
+		"layout (location = 0) in vec3 position;\n"
+		"out vec2 uvs;"
+		"void main()\n"
+		"{\n"
+		"gl_Position = vec4(position.xyz, 1.0);\n"
+		"uvs = vec2((position.x + 1.0)/ 2.0, (position.y + 1.0) / 2.0);\n"
+		"}\0";
+
+	const char* fragmentShaderSource =
+		"#version 330 core\n"
+		"in vec2 uvs;\n"
+		"out vec4 fragmentColor;\n"
+		"uniform sampler2D inputTexture;\n"
+		"void main()\n"
+		"{\n"
+		"fragmentColor = texture(inputTexture, uvs);"
+		"}\0";
 	unsigned int vertexShader = compileShader(vertexShaderSource, GL_VERTEX_SHADER);
 	unsigned int fragmentShader = compileShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
 	unsigned int shaderProgram = glCreateProgram();
@@ -120,46 +128,12 @@ unsigned int compileShaderProgram(const char* fragmentShaderSource) {
 	return shaderProgram;
 }
 
-unsigned int buildTriangle() {
-	float vertices[] = {
-		// positions			// colors
-		-0.4f, -0.4f, 0.0f,		0.5f, 0.0f, 0.0f,
-		0.4f, -0.4f, 0.0f,		0.0f, 0.5f, 0.0f,
-		0.0f, 0.4f, 0.0f,		0.0f, 0.0f, 0.5f
-	};
-	unsigned int indices[] = {
-		0, 1, 2
-	};
-
-	unsigned int VAO, VBO, EBO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-	return VAO;
-}
-
 unsigned int buildRectangle() {
 	float vertices[] = {
-		   -0.5f,  0.5f, 0.0f,
-			0.5f,  0.5f, 0.0f,
-			0.5f, -0.5f, 0.0f,
-		   -0.5f, -0.5f, 0.0f
+		   -1.0f,  1.0f, 0.0f,	// top left
+			1.0f,  1.0f, 0.0f,	// top right
+			1.0f, -1.0f, 0.0f,	// bottom right
+		   -1.0f, -1.0f, 0.0f	// bottom left
 	};
 	unsigned int indices[] = {
 		0, 1, 2,
@@ -186,32 +160,17 @@ unsigned int buildRectangle() {
 	return VAO;
 }
 
-void CalculateUniformColor(unsigned int shaderProgram) {
-	float time = glfwGetTime();
-	float colorValue = (sin(time) + 1.0f) / 4.0f;
-	int uniformColor = glGetUniformLocation(shaderProgram, "uniformColor");
-	glUseProgram(shaderProgram);
-	glUniform4f(uniformColor, colorValue, colorValue, colorValue, 1.0f);
-}
-
 void draw(unsigned int VAO, unsigned int shaderProgram) {
 	glBindVertexArray(VAO);
 	glUseProgram(shaderProgram);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-void renderLoop(GLFWwindow* window, unsigned int VAOs[], unsigned int shaderPrograms[]) {
+void renderLoop(GLFWwindow* window, unsigned int VAO, unsigned int shaderProgram) {
 
 	while (!glfwWindowShouldClose(window)) {
-		processInput(window);
-
-		glClear(GL_COLOR_BUFFER_BIT);		
-		int size = sizeof(VAOs) / sizeof(VAOs[0]);
-		for (int i = 0; i < size; i++) {
-			CalculateUniformColor(shaderPrograms[1]);
-			draw(VAOs[i], shaderPrograms[i]);
-		}
-
+		glClear(GL_COLOR_BUFFER_BIT);
+		draw(VAO, shaderProgram);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
@@ -220,16 +179,7 @@ void renderLoop(GLFWwindow* window, unsigned int VAOs[], unsigned int shaderProg
 void Renderer::run()
 {
 	GLFWwindow* window = initWindow();
-	unsigned int VAOs[]{
-		buildRectangle(),
-		buildTriangle()
-	};
-	unsigned int shaderPrograms[]{
-		compileShaderProgram(rectangleFragmentShaderSource),
-		compileShaderProgram(triangleFragmentShaderSource)
-	};
-
-
-	renderLoop(window, VAOs, shaderPrograms);
+	generateTexture();
+	renderLoop(window, buildRectangle(), compileShaderProgram());
 	glfwTerminate();
 }
