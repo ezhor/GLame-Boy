@@ -9,25 +9,29 @@
 const char* vertexShaderSource =
 "#version 330 core \n"
 "layout (location = 0) in vec3 position;\n"
+"out vec4 vertexColor;"
 "void main()\n"
 "{\n"
-"gl_Position = vec4(position.x, position.y, position.z, 1.0);\n"
+"gl_Position = vec4(position.xyz, 1.0);\n"
+"vertexColor = vec4(0.0, 0.5, 0.5, 1.0);\n"
 "}\0";
 
 const char* blueFragmentShaderSource =
 "#version 330 core\n"
-"out vec4 FragmentColor;\n"
+"out vec4 fragmentColor;\n"
+"uniform vec4 uniformColor;"
 "void main()\n"
 "{\n"
-"FragmentColor = vec4(0.0f, 0.0f, 0.5f, 1.0f);"
+"fragmentColor = uniformColor;"
 "}\0";
 
 const char* greenFragmentShaderSource =
 "#version 330 core\n"
-"out vec4 FragmentColor;\n"
+"out vec4 fragmentColor;\n"
+"in vec4 vertexColor;\n"
 "void main()\n"
 "{\n"
-"FragmentColor = vec4(0.0f, 0.5f, 0.0f, 1.0f);"
+"fragmentColor = vertexColor;"
 "}\0";
 
 bool polygonMode = true;
@@ -41,7 +45,7 @@ void processInput(GLFWwindow* window) {
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	if (key == GLFW_KEY_P && action == GLFW_PRESS)
+	if (key == GLFW_KEY_W && action == GLFW_PRESS)
 	{
 		polygonMode = !polygonMode;
 		glPolygonMode(GL_FRONT_AND_BACK, polygonMode ? GL_FILL : GL_LINE);
@@ -176,6 +180,14 @@ unsigned int buildRectangle() {
 	return VAO;
 }
 
+void CalculateUniformColor(unsigned int shaderProgram) {
+	float time = glfwGetTime();
+	float blueValue = (sin(time) + 1.0f) / 2.0f;
+	int uniformColor = glGetUniformLocation(shaderProgram, "uniformColor");
+	glUseProgram(shaderProgram);
+	glUniform4f(uniformColor, 0.0f, 0.5f, blueValue, 1.0f);
+}
+
 void draw(unsigned int VAO, unsigned int shaderProgram) {
 	glBindVertexArray(VAO);
 	glUseProgram(shaderProgram);
@@ -188,6 +200,7 @@ void renderLoop(GLFWwindow* window, unsigned int VAOs[], unsigned int shaderProg
 		processInput(window);
 
 		glClear(GL_COLOR_BUFFER_BIT);
+		CalculateUniformColor(shaderPrograms[1]);
 		int size = sizeof(VAOs) / sizeof(VAOs[0]);
 		for (int i = 0; i < size; i++) {
 			draw(VAOs[i], shaderPrograms[i]);
@@ -209,6 +222,8 @@ void Renderer::run()
 		compileShaderProgram(greenFragmentShaderSource),
 		compileShaderProgram(blueFragmentShaderSource)
 	};
+
+
 	renderLoop(window, VAOs, shaderPrograms);
 	glfwTerminate();
 }

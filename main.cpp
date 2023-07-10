@@ -3,9 +3,9 @@
 #include "Cpu.h"
 
 int main() {
-	//Renderer renderer = Renderer();
-	//renderer.run();
-	Cpu cpu = Cpu();
+	Renderer renderer = Renderer();
+	renderer.run();
+	/*Cpu cpu = Cpu();
 	cpu.loadInstructions();
-	while (cpu.tick());
+	while (cpu.tick());*/
 }
