@@ -1,12 +1,13 @@
 #include <vector>
+#include "Common.h"
 #pragma once
 class Bus
 {
 public:
 	void load();
-	unsigned char read(unsigned short location);
-	unsigned short read16(unsigned short location);
-	void write(unsigned short location, unsigned char value);
+	u8 read(u16 location);
+	u16 read16(u16 location);
+	void write(u16 location, u8 value);
 private:
 	std::vector<char> memory;
 };

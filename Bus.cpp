@@ -12,17 +12,17 @@ void Bus::load() {
 	file.read(memory.data(), size);
 }
 
-unsigned char Bus::read(unsigned short location)
+u8 Bus::read(u16 location)
 {
 	return memory.at(location);
 }
 
-unsigned short Bus::read16(unsigned short location)
+u16 Bus::read16(u16 location)
 {
 	return (memory.at(location + 1) << 8) + memory.at(location);
 }
 
-void Bus::write(unsigned short location, unsigned char value)
+void Bus::write(u16 location, u8 value)
 {
 	memory.at(location) = value;
 }

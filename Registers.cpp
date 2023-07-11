@@ -8,127 +8,127 @@ Registers::Registers()
 	bc = 0;
 	de = 0;
 	hl = 0;
-	c = (unsigned char*)&bc;
+	c = (u8*)&bc;
 	b = &c[1];
-	e = (unsigned char*)&de;
+	e = (u8*)&de;
 	d = &e[1];
-	l = (unsigned char*)&hl;
+	l = (u8*)&hl;
 	h = &l[1];
 	sp = 0;
 	pc = 0;
 }
 
-unsigned char Registers::getA()
+u8 Registers::getA()
 {
 	return a;
 }
 
-void Registers::setA(unsigned char value)
+void Registers::setA(u8 value)
 {
 	a = value;
 }
 
-unsigned char Registers::getF()
+u8 Registers::getF()
 {
 	return f;
 }
 
-void Registers::setF(unsigned char value)
+void Registers::setF(u8 value)
 {
 	f = value;
 }
 
-unsigned char Registers::getB()
+u8 Registers::getB()
 {
 	return *b;
 }
 
-void Registers::setB(unsigned char value)
+void Registers::setB(u8 value)
 {
 	*b = value;
 }
 
-unsigned char Registers::getC()
+u8 Registers::getC()
 {
 	return *c;
 }
 
-void Registers::setC(unsigned char value)
+void Registers::setC(u8 value)
 {
 	*c = value;
 }
 
-unsigned char Registers::getE()
+u8 Registers::getE()
 {
 	return *e;
 }
 
-void Registers::setE(unsigned char value)
+void Registers::setE(u8 value)
 {
 	*e = value;
 }
 
-unsigned char Registers::getH()
+u8 Registers::getH()
 {
 	return *h;
 }
 
-void Registers::setL(unsigned char value)
+void Registers::setL(u8 value)
 {
 	*l = value;
 }
 
-unsigned short Registers::getBC()
+u16 Registers::getBC()
 {
 	return bc;
 }
 
-void Registers::setBC(unsigned short value)
+void Registers::setBC(u16 value)
 {
 	bc = value;
 }
 
-unsigned short Registers::getDE()
+u16 Registers::getDE()
 {
 	return de;
 }
 
-void Registers::setDE(unsigned short value)
+void Registers::setDE(u16 value)
 {
 	de = value;
 }
 
-unsigned short Registers::getHL()
+u16 Registers::getHL()
 {
 	return hl;
 }
 
-void Registers::setHL(unsigned short value)
+void Registers::setHL(u16 value)
 {
 	hl = value;
 }
 
-unsigned short Registers::getSP()
+u16 Registers::getSP()
 {
 	return sp;
 }
 
-void Registers::setSP(unsigned short value)
+void Registers::setSP(u16 value)
 {
 	sp = value;
 }
 
-unsigned short Registers::getPC()
+u16 Registers::getPC()
 {
 	return pc;
 }
 
-void Registers::setPC(unsigned short value)
+void Registers::setPC(u16 value)
 {
 	pc = value;
 }
 
-void Registers::incrementPC(unsigned short increment)
+void Registers::incrementPC(u16 increment)
 {
 	setPC(getPC() + increment);
 }
@@ -138,12 +138,12 @@ void Registers::incrementPC()
 	incrementPC(1);
 }
 
-bool Registers::getFlag(unsigned char flag)
+bool Registers::getFlag(u8 flag)
 {
 	return (getF() & flag) == flag;
 }
 
-void Registers::setFlag(unsigned char flag, bool value)
+void Registers::setFlag(u8 flag, bool value)
 {
 	setF(value ? (getF() | flag) : (getF() & ~flag));
 }

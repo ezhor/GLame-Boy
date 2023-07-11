@@ -1,7 +1,6 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <iostream>
 #include "Renderer.h"
+#include "Common.h"
 
 #define SCREEN_SCALE 4
 #define SCREEN_WIDTH 160
@@ -9,9 +8,11 @@
 #define SCALED_SCREEN_WIDTH SCREEN_WIDTH * SCREEN_SCALE
 #define SCALED_SCREEN_HEIGHT SCREEN_HEIGHT * SCREEN_SCALE
 
-unsigned char texture[SCREEN_WIDTH * SCREEN_HEIGHT * 3];
+u8 texture[SCREEN_WIDTH * SCREEN_HEIGHT * 3];
 bool polygonMode = true;
 bool pWassPressed = false;
+unsigned int background;
+unsigned int shaderProgram;
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -21,17 +22,18 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		glPolygonMode(GL_FRONT_AND_BACK, polygonMode ? GL_FILL : GL_LINE);
 	}
 }
+
 void framebufferSizeCallback(GLFWwindow* window, int windowWidth, int windowHeight) {
 	int width = windowHeight * SCREEN_WIDTH / SCREEN_HEIGHT;
 	glViewport((windowWidth - width) / 2, 0, width, windowHeight);
 }
 
-GLFWwindow* initWindow() {
+void Renderer::init() {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	GLFWwindow* window = glfwCreateWindow(SCALED_SCREEN_WIDTH, SCALED_SCREEN_HEIGHT, "GLame Boy", NULL, NULL);
+	window = glfwCreateWindow(SCALED_SCREEN_WIDTH, SCALED_SCREEN_HEIGHT, "GLame Boy", NULL, NULL);
 
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -46,8 +48,9 @@ GLFWwindow* initWindow() {
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glViewport(0, 0, SCALED_SCREEN_WIDTH, SCALED_SCREEN_HEIGHT);
-
-	return window;
+	background = buildRectangle();
+	shaderProgram = compileShaderProgram();
+	generateTexture();
 }
 
 void checkShaderCompilationError(int shader) {
@@ -79,14 +82,7 @@ void checkShaderProgramLinkingError(int shaderProgram) {
 	}
 }
 
-void generateTexture() {
-	/*for (int i = 0; i < sizeof(texture) / sizeof(char); i += 3) {
-		texture[i] = i / 90;
-		texture[i + 1] = i / 90;
-		texture[i + 2] = i / 90;
-	}*/
-
-	texture[(160 / 2 + 160 * (144 / 2)) * 3 + 1] = 255;
+void Renderer::generateTexture() {
 	unsigned int textureId;
 	glGenTextures(1, &textureId);
 	glBindTexture(GL_TEXTURE_2D, textureId);
@@ -95,7 +91,7 @@ void generateTexture() {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCREEN_WIDTH, SCREEN_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, texture);
 }
 
-unsigned int compileShaderProgram() {
+unsigned int Renderer::compileShaderProgram() {
 	const char* vertexShaderSource =
 		"#version 330 core \n"
 		"layout (location = 0) in vec3 position;\n"
@@ -128,7 +124,7 @@ unsigned int compileShaderProgram() {
 	return shaderProgram;
 }
 
-unsigned int buildRectangle() {
+unsigned int Renderer::buildRectangle() {
 	float vertices[] = {
 		   -1.0f,  1.0f, 0.0f,	// top left
 			1.0f,  1.0f, 0.0f,	// top right
@@ -160,26 +156,12 @@ unsigned int buildRectangle() {
 	return VAO;
 }
 
-void draw(unsigned int VAO, unsigned int shaderProgram) {
-	glBindVertexArray(VAO);
-	glUseProgram(shaderProgram);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-}
-
-void renderLoop(GLFWwindow* window, unsigned int VAO, unsigned int shaderProgram) {
-
-	while (!glfwWindowShouldClose(window)) {
-		glClear(GL_COLOR_BUFFER_BIT);
-		draw(VAO, shaderProgram);
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
-}
-
-void Renderer::run()
+void Renderer::draw()
 {
-	GLFWwindow* window = initWindow();
-	generateTexture();
-	renderLoop(window, buildRectangle(), compileShaderProgram());
-	glfwTerminate();
+	glClear(GL_COLOR_BUFFER_BIT);
+	glUseProgram(shaderProgram);
+	glBindVertexArray(background);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glfwSwapBuffers(window);
+	glfwPollEvents();
 }

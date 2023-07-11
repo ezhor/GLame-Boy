@@ -20,18 +20,18 @@ class Cpu
 	};
 
 public:
-	Cpu();
+	Cpu(Bus* bus);
 	void loadInstructions();
 	bool tick();
 private:
 	Registers registers;
-	Bus bus;
-	std::map<unsigned short, Instruction> instructions;
+	Bus* bus;
+	std::map<u16, Instruction> instructions;
 
-	unsigned char immediateData();
-	unsigned short immediateData16();
-	void cp(unsigned char value);
-	void sub(unsigned char value);
-	void jp(unsigned short flag);
+	u8 immediateData();
+	u16 immediateData16();
+	void cp(u8 value);
+	void sub(u8 value);
+	void jp(u8 flag);
 };
 

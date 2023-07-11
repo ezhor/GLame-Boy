@@ -1,48 +1,50 @@
+#include "Common.h"
+
 #pragma once
 class Registers
 {
 public:
 	Registers();
-	unsigned char getA();
-	void setA(unsigned char value);
-	unsigned char getF();
-	void setF(unsigned char value);
-	unsigned char getB();
-	void setB(unsigned char value);
-	unsigned char getC();
-	void setC(unsigned char value);
-	unsigned char getE();
-	void setE(unsigned char value);
-	unsigned char getH();
-	void setL(unsigned char value);
-	unsigned short getBC();
-	void setBC(unsigned short value);
-	unsigned short getDE();
-	void setDE(unsigned short value);
-	unsigned short getHL();
-	void setHL(unsigned short value);
-	unsigned short getSP();
-	void setSP(unsigned short value);
-	unsigned short getPC();
-	void setPC(unsigned short value);
-	void incrementPC(unsigned short increment);
+	u8 getA();
+	void setA(u8 value);
+	u8 getF();
+	void setF(u8 value);
+	u8 getB();
+	void setB(u8 value);
+	u8 getC();
+	void setC(u8 value);
+	u8 getE();
+	void setE(u8 value);
+	u8 getH();
+	void setL(u8 value);
+	u16 getBC();
+	void setBC(u16 value);
+	u16 getDE();
+	void setDE(u16 value);
+	u16 getHL();
+	void setHL(u16 value);
+	u16 getSP();
+	void setSP(u16 value);
+	u16 getPC();
+	void setPC(u16 value);
+	void incrementPC(u16 increment);
 	void incrementPC();
-	bool getFlag(unsigned char flag);
-	void setFlag(unsigned char flag, bool value);
+	bool getFlag(u8 flag);
+	void setFlag(u8 flag, bool value);
 
 private:
-	unsigned char a;
-	unsigned char f;
-	unsigned char* b;
-	unsigned char* c;
-	unsigned char* d;
-	unsigned char* e;
-	unsigned char* h;
-	unsigned char* l;
-	unsigned short bc;
-	unsigned short de;
-	unsigned short hl;
-	unsigned short sp;
-	unsigned short pc;
+	u8 a;
+	u8 f;
+	u8* b;
+	u8* c;
+	u8* d;
+	u8* e;
+	u8* h;
+	u8* l;
+	u16 bc;
+	u16 de;
+	u16 hl;
+	u16 sp;
+	u16 pc;
 };
 
