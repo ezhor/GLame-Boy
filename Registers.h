@@ -19,9 +19,12 @@ public:
 	void setL(u8 value);
 	u16 getBC();
 	void setBC(u16 value);
+	void decrementBC();
 	u16 getDE();
 	void setDE(u16 value);
+	void incrementDE();
 	u16 getHL();
+	u16 getHLI();
 	void setHL(u16 value);
 	u16 getSP();
 	void setSP(u16 value);

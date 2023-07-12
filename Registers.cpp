@@ -88,6 +88,11 @@ void Registers::setBC(u16 value)
 	bc = value;
 }
 
+void Registers::decrementBC()
+{
+	bc--;
+}
+
 u16 Registers::getDE()
 {
 	return de;
@@ -98,9 +103,18 @@ void Registers::setDE(u16 value)
 	de = value;
 }
 
+void Registers::incrementDE()
+{
+	de++;
+}
+
 u16 Registers::getHL()
 {
 	return hl;
+}
+
+u16 Registers::getHLI() {
+	return hl++;
 }
 
 void Registers::setHL(u16 value)

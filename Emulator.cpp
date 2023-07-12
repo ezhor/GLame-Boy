@@ -3,8 +3,7 @@
 
 void Emulator::run()
 {	
-	while (!glfwWindowShouldClose(renderer.window)) {
-		cpu.tick();
+	while (!glfwWindowShouldClose(renderer.window) && cpu.tick()) {
 		renderer.draw();
 	}
 	glfwTerminate();

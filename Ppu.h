@@ -11,6 +11,7 @@ public:
 	}
 
 	void init();
+	void tick();
 
 private:
 	Bus* bus;

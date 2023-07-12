@@ -24,7 +24,6 @@ void Cpu::cp(u8 value) {
 	registers.setFlag(N_FLAG, true);
 	registers.setFlag(H_FLAG, (registers.getA() & LOWER_NIBBLE) < (value & LOWER_NIBBLE));
 	registers.setFlag(C_FLAG, registers.getA() < value);
-
 }
 
 void Cpu::sub(u8 value) {
@@ -32,22 +31,46 @@ void Cpu::sub(u8 value) {
 
 }
 
-void Cpu::jp(u8 flag)
+void Cpu::logicOr(u8 value)
 {
-	if (registers.getFlag(flag)) {
+	registers.setA(registers.getA() | registers.getC());
+	registers.setFlag(Z_FLAG, registers.getA() == 0);
+	registers.setFlag(N_FLAG, false);
+	registers.setFlag(H_FLAG, false);
+	registers.setFlag(C_FLAG, false);
+}
+
+void Cpu::jp(u8 flag, bool opposite)
+{
+	if (registers.getFlag(flag) != opposite) {
 		registers.setPC(immediateData16());
 	}
 }
 
+void Cpu::jp(u8 flag)
+{
+	jp(flag, false);
+}
+
 void Cpu::loadInstructions()
 {
-	instructions.insert({ (u16)0x00, {1, 4, []() {;}} }); // nop
-	instructions.insert({ (u16)0xC3, {3, 16, [this]() {jp(NO_FLAG);}} }); // jp a16
-	instructions.insert({ (u16)0x3E, {2, 8, [this]() {registers.setA(immediateData());}} }); // ld A,d8
-	instructions.insert({ (u16)0xEA, {3, 16, [this]() {bus->write(immediateData16(), registers.getA());}} }); // ld (a16),A
-	instructions.insert({ (u16)0xFA, {3, 16, [this]() {registers.setA(bus->read(immediateData16()));}} }); // ld A,(a16)
-	instructions.insert({ (u16)0xFE, {2, 8, [this]() {cp(immediateData());}} }); // cp d8
-	instructions.insert({ (u16)0xDA, {2, 8, [this]() {jp(C_FLAG);}} }); // JP C,a16
+	instructions.insert({ 0x00, {1, 4, []() {;}} }); // NOP
+	instructions.insert({ 0xC3, {3, 16, [this]() {jp(NO_FLAG);}} }); // JP a16
+	instructions.insert({ 0x3E, {2, 8, [this]() {registers.setA(immediateData());}} }); // LD A,d8
+	instructions.insert({ 0xEA, {3, 16, [this]() {bus->write(immediateData16(), registers.getA());}} }); // LD (a16),A
+	instructions.insert({ 0xFA, {3, 16, [this]() {registers.setA(bus->read(immediateData16()));}} }); // LD A,(a16)
+	instructions.insert({ 0xFE, {2, 8, [this]() {cp(immediateData());}} }); // CP d8
+	instructions.insert({ 0xDA, {3, 8, [this]() {jp(C_FLAG);}} }); // JP C,a16
+	instructions.insert({ 0x01, {3, 16, [this]() {registers.setBC(immediateData16());}} }); // LD BC,d16
+	instructions.insert({ 0x11, {3, 12, [this]() {registers.setDE(immediateData16());}} }); // LD DE,d16
+	instructions.insert({ 0x21, {3, 12, [this]() {registers.setHL(immediateData16());}} }); // LD HL,d16
+	instructions.insert({ 0x1A, {1, 8, [this]() {registers.setA(bus->read(registers.getDE()));}} }); // LD A,(DE)
+	instructions.insert({ 0x22, {1, 8, [this]() {bus->write(registers.getHLI(), registers.getA());}} }); // LD (HL+),A
+	instructions.insert({ 0x13, {1, 8, [this]() {registers.incrementDE();}} }); // INC DE
+	instructions.insert({ 0x0B, {1, 8, [this]() {registers.decrementBC();}} }); // DEC BC
+	instructions.insert({ 0x78, {1, 4, [this]() {registers.setA(registers.getB());}} }); // LD A,B
+	instructions.insert({ 0xB1, {1, 4, [this]() {logicOr(registers.getC());}} }); // OR C
+	instructions.insert({ 0xC2, {3, 16, [this]() {jp(Z_FLAG, true);}} }); // JP NZ,a16
 
 	std::cout << instructions.size() << "/512 instructions implemented" << std::endl;
 }
@@ -64,7 +87,7 @@ bool Cpu::tick()
 		u16 beforeInstructionPC = registers.getPC();
 		Instruction instruction = instructions.at(opcode);
 
-		std::cout << "Executing instruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << std::endl;
+		//std::cout << "Executing instruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << std::endl;
 		instruction.implementation();
 		if (beforeInstructionPC == registers.getPC()) {
 			registers.incrementPC(instruction.lenght);

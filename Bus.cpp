@@ -25,4 +25,7 @@ u16 Bus::read16(u16 location)
 void Bus::write(u16 location, u8 value)
 {
 	memory.at(location) = value;
+	if (location >= VRAM_LOCATION_START && location <= VRAM_LOCATION_END) {
+		updateVram = true;
+	}
 }

@@ -32,6 +32,8 @@ private:
 	u16 immediateData16();
 	void cp(u8 value);
 	void sub(u8 value);
+	void logicOr(u8 value);
+	void jp(u8 flag, bool opposite);
 	void jp(u8 flag);
 };
 
