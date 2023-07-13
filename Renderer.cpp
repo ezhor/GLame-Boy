@@ -2,13 +2,6 @@
 #include "Renderer.h"
 #include "Common.h"
 
-#define SCREEN_SCALE 4
-#define SCREEN_WIDTH 160
-#define SCREEN_HEIGHT 144
-#define SCALED_SCREEN_WIDTH SCREEN_WIDTH * SCREEN_SCALE
-#define SCALED_SCREEN_HEIGHT SCREEN_HEIGHT * SCREEN_SCALE
-
-u8 texture[SCREEN_WIDTH * SCREEN_HEIGHT * 3];
 bool polygonMode = true;
 bool pWassPressed = false;
 unsigned int background;
@@ -24,8 +17,13 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 }
 
 void framebufferSizeCallback(GLFWwindow* window, int windowWidth, int windowHeight) {
-	int width = windowHeight * SCREEN_WIDTH / SCREEN_HEIGHT;
-	glViewport((windowWidth - width) / 2, 0, width, windowHeight);
+	if (windowWidth > windowHeight) {
+		int width = windowHeight * SCREEN_WIDTH / SCREEN_HEIGHT;
+		glViewport((windowWidth - width) / 2, 0, width, windowHeight);
+	}else{
+		int height = windowWidth * SCREEN_HEIGHT / SCREEN_WIDTH;
+		glViewport(0, (windowHeight - height) / 2, windowWidth, height);
+	}
 }
 
 void Renderer::init() {
@@ -49,7 +47,9 @@ void Renderer::init() {
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glViewport(0, 0, SCALED_SCREEN_WIDTH, SCALED_SCREEN_HEIGHT);
 	background = buildRectangle();
+	glBindVertexArray(background);
 	shaderProgram = compileShaderProgram();
+	glUseProgram(shaderProgram);
 	generateTexture();
 }
 
@@ -88,6 +88,9 @@ void Renderer::generateTexture() {
 	glBindTexture(GL_TEXTURE_2D, textureId);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+}
+
+void Renderer::sendTextureData() {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCREEN_WIDTH, SCREEN_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, texture);
 }
 
@@ -159,8 +162,7 @@ unsigned int Renderer::buildRectangle() {
 void Renderer::draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
-	glUseProgram(shaderProgram);
-	glBindVertexArray(background);
+	glUseProgram(shaderProgram);	
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	glfwSwapBuffers(window);
 	glfwPollEvents();

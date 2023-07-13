@@ -1,7 +1,23 @@
 #pragma once
+// Types
 #define u8 unsigned char
 #define u16 unsigned short
-#define rLY 0xFF44
+
+// Screen
+#define SCREEN_SCALE 4
+#define SCREEN_WIDTH 160
+#define SCREEN_HEIGHT 144
+#define SCALED_SCREEN_WIDTH SCREEN_WIDTH * SCREEN_SCALE
+#define SCALED_SCREEN_HEIGHT SCREEN_HEIGHT * SCREEN_SCALE
+
+//Values
 #define VBlank 0x90
+
+//Memory locations
+#define rLY 0xFF44
 #define VRAM_LOCATION_START 0x8000
 #define VRAM_LOCATION_END 0x9FFF
+#define VRAM_LOCATION_TILEDATA_START 0x9000
+#define VRAM_LOCATION_TILEDATA_END 0x97F0
+#define VRAM_LOCATION_TILEMAP_START 0x9800
+#define VRAM_LOCATION_TILEMAP_END 0x9A33

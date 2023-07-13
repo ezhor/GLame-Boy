@@ -10,6 +10,6 @@ public:
 	void write(u16 location, u8 value);
 	bool updateVram;
 private:
-	std::vector<char> memory;
+	char memory[0x10000];
 };
 

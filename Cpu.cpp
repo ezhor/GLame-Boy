@@ -2,6 +2,8 @@
 #include <iostream>
 #include <iomanip>
 
+u16 biggestPC = 0;
+
 Cpu::Cpu(Bus* bus)
 {
 	this->bus = bus;
@@ -77,7 +79,7 @@ void Cpu::loadInstructions()
 
 
 
-bool Cpu::tick()
+void Cpu::tick()
 {
 	u8 opcode = bus->read(registers.getPC());
 
@@ -88,14 +90,21 @@ bool Cpu::tick()
 		Instruction instruction = instructions.at(opcode);
 
 		//std::cout << "Executing instruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << std::endl;
+//		std::cout << "PC: " << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)registers.getPC()
+//			<< "\t Instruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << std::endl;
+		if (biggestPC < registers.getPC()) {
+			biggestPC = registers.getPC();
+			std::cout << "Biggest PC: " << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)biggestPC
+				<< "\tInstruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << std::endl;
+		}
 		instruction.implementation();
 		if (beforeInstructionPC == registers.getPC()) {
 			registers.incrementPC(instruction.lenght);
 		}
-		return true;
+		//return true;
 	}
 	else {
 		std::cout << "Instruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << " not implemented" << std::endl;
-		return false;
+		//return false;
 	}
 }

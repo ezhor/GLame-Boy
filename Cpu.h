@@ -22,7 +22,7 @@ class Cpu
 public:
 	Cpu(Bus* bus);
 	void loadInstructions();
-	bool tick();
+	void tick();
 private:
 	Registers registers;
 	Bus* bus;
