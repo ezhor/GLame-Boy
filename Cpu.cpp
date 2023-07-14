@@ -58,25 +58,37 @@ void Cpu::jp(u8 flag)
 
 void Cpu::loadInstructions()
 {
-	instructions.insert({ 0x00, {1, 4, []() {;}} }); // NOP
-	instructions.insert({ 0xC3, {3, 16, [this]() {jp(NO_FLAG);}} }); // JP a16
-	instructions.insert({ 0x3E, {2, 8, [this]() {registers.setA(immediateData());}} }); // LD A,d8
-	instructions.insert({ 0xEA, {3, 16, [this]() {bus->write(immediateData16(), registers.getA());}} }); // LD (a16),A
-	instructions.insert({ 0xFA, {3, 16, [this]() {registers.setA(bus->read(immediateData16()));}} }); // LD A,(a16)
-	instructions.insert({ 0xFE, {2, 8, [this]() {cp(immediateData());}} }); // CP d8
-	instructions.insert({ 0xDA, {3, 8, [this]() {jp(C_FLAG);}} }); // JP C,a16
-	instructions.insert({ 0x01, {3, 16, [this]() {registers.setBC(immediateData16());}} }); // LD BC,d16
-	instructions.insert({ 0x11, {3, 12, [this]() {registers.setDE(immediateData16());}} }); // LD DE,d16
-	instructions.insert({ 0x21, {3, 12, [this]() {registers.setHL(immediateData16());}} }); // LD HL,d16
-	instructions.insert({ 0x1A, {1, 8, [this]() {registers.setA(bus->read(registers.getDE()));}} }); // LD A,(DE)
-	instructions.insert({ 0x22, {1, 8, [this]() {bus->write(registers.getHLI(), registers.getA());}} }); // LD (HL+),A
-	instructions.insert({ 0x13, {1, 8, [this]() {registers.incrementDE();}} }); // INC DE
-	instructions.insert({ 0x0B, {1, 8, [this]() {registers.decrementBC();}} }); // DEC BC
-	instructions.insert({ 0x78, {1, 4, [this]() {registers.setA(registers.getB());}} }); // LD A,B
-	instructions.insert({ 0xB1, {1, 4, [this]() {logicOr(registers.getC());}} }); // OR C
-	instructions.insert({ 0xC2, {3, 16, [this]() {jp(Z_FLAG, true);}} }); // JP NZ,a16
+	instructions[0x00] = { 1, 4, []() {;} }; // NOP
+	instructions[0xC3] = { 3, 16, [this]() {jp(NO_FLAG);} }; // JP a16
+	instructions[0x3E] = { 2, 8, [this]() {registers.setA(immediateData());} }; // LD A,d8
+	instructions[0xEA] = { 3, 16, [this]() {bus->write(immediateData16(), registers.getA());} }; // LD (a16),A
+	instructions[0xFA] = { 3, 16, [this]() {registers.setA(bus->read(immediateData16()));} }; // LD A,(a16)
+	instructions[0xFE] = { 2, 8, [this]() {cp(immediateData());} }; // CP d8
+	instructions[0xDA] = { 3, 8, [this]() {jp(C_FLAG);} }; // JP C,a16
+	instructions[0x01] = { 3, 16, [this]() {registers.setBC(immediateData16());} }; // LD BC,d16
+	instructions[0x11] = { 3, 12, [this]() {registers.setDE(immediateData16());} }; // LD DE,d16
+	instructions[0x21] = { 3, 12, [this]() {registers.setHL(immediateData16());} }; // LD HL,d16
+	instructions[0x1A] = { 1, 8, [this]() {registers.setA(bus->read(registers.getDE()));} }; // LD A,(DE)
+	instructions[0x22] = { 1, 8, [this]() {bus->write(registers.getHLI(), registers.getA());} }; // LD (HL+),A
+	instructions[0x13] = { 1, 8, [this]() {registers.incrementDE();} }; // INC DE
+	instructions[0x0B] = { 1, 8, [this]() {registers.decrementBC();} }; // DEC BC
+	instructions[0x78] = { 1, 4, [this]() {registers.setA(registers.getB());} }; // LD A,B
+	instructions[0xB1] = { 1, 4, [this]() {logicOr(registers.getC());} }; // OR C
+	instructions[0xC2] = { 3, 16, [this]() {jp(Z_FLAG, true);} }; // JP NZ,a16
 
-	std::cout << instructions.size() << "/512 instructions implemented" << std::endl;
+	std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;
+}
+
+u16 Cpu::instructionsCount()
+{
+	u16 count = 0;
+	for (u16 i = 0; i < sizeof(instructions) / sizeof(instructions[0]); i++)
+	{
+		if (instructions[i].implementation != nullptr) {
+			count++;
+		}
+	}
+	return count;
 }
 
 
@@ -84,11 +96,9 @@ void Cpu::loadInstructions()
 void Cpu::tick()
 {
 	u8 opcode = bus->read(registers.getPC());
+	Instruction instruction = instructions[opcode];
 
-	std::map<u16, Instruction>::iterator iterator = instructions.find(opcode);
-
-	if (iterator != instructions.end()) {
-		Instruction instruction = instructions.at(opcode);
+	if (true) {//iterator != instructions.end()) {
 
 		//std::cout << "Executing instruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << std::endl;
 //		std::cout << "PC: " << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)registers.getPC()

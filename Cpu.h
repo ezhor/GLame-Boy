@@ -26,7 +26,9 @@ public:
 private:
 	Registers registers;
 	Bus* bus;
-	std::map<u16, Instruction> instructions;
+	Instruction instructions[512];
+
+	u16 instructionsCount();
 
 	u8 immediateData();
 	u16 immediateData16();
