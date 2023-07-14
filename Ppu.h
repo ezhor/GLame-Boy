@@ -31,7 +31,7 @@ public:
 	void init();
 	void tick();
 	void drawTile(u8 tileX, u8 tileY);
-	Color getPixelColor(u16 tiledataLocation, u16 offsetX, u16 offsetY);
+	Color getPixelColor(u16 tiledataLocation, u8 offsetX, u8 offsetY);
 
 private:
 	Bus* bus;

@@ -18,7 +18,9 @@ u8 Bus::read(u16 location)
 
 u16 Bus::read16(u16 location)
 {
-	return (memory[location + 1] << 8) + memory[location];
+	u16 highByte = memory[location + 1] << 8;
+	u16 lowByte = memory[location] & 0xFF;
+	return highByte + lowByte;
 }
 
 void Bus::write(u16 location, u8 value)

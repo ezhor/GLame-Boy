@@ -10,9 +10,9 @@ void Ppu::init()
 void Ppu::tick()
 {
 	if (bus->updateVram) {
-		for (u16 tileY = 0; tileY < SCREEN_HEIGHT / 8; tileY++) {
-			for (u16 tileX = 0; tileX < SCREEN_WIDTH / 8; tileX++) {
-				//std::cout << "PPU read location: " << VRAM_LOCATION_TILEMAP_START + ((y * SCREEN_WIDTH + x) * 0x10) << std::endl;
+		bus->updateVram = false;
+		for (u8 tileY = 0; tileY < SCREEN_HEIGHT / 8; tileY++) {
+			for (u8 tileX = 0; tileX < SCREEN_WIDTH / 8; tileX++) {
 				drawTile(tileX, tileY);
 			}
 		}
@@ -34,10 +34,10 @@ void Ppu::drawTile(u8 tileX, u8 tileY)
 	}
 }
 
-Color Ppu::getPixelColor(u16 tiledataLocation, u16 offsetX, u16 offsetY)
+Color Ppu::getPixelColor(u16 tiledataLocation, u8 offsetX, u8 offsetY)
 {
-	u16 line1 = bus->read16(tiledataLocation + offsetY);
-	u16 line2 = bus->read16(tiledataLocation + offsetY + 1);
+	u8 line1 = bus->read(tiledataLocation + offsetY);
+	u8 line2 = bus->read(tiledataLocation + offsetY + 1);
 
 	u8 value = bitFromByte(line1, offsetX) + bitFromByte(line2, offsetX);
 
@@ -46,5 +46,5 @@ Color Ppu::getPixelColor(u16 tiledataLocation, u16 offsetX, u16 offsetY)
 
 u8 Ppu::bitFromByte(u8 byte, u8 bitPosition)
 {
-	return (byte >> 8 - bitPosition) | 0x1;
+	return (byte >> 8 - bitPosition) & 0x01;
 }

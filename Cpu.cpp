@@ -3,6 +3,7 @@
 #include <iomanip>
 
 u16 biggestPC = 0;
+bool jumped = false;
 
 Cpu::Cpu(Bus* bus)
 {
@@ -46,6 +47,7 @@ void Cpu::jp(u8 flag, bool opposite)
 {
 	if (registers.getFlag(flag) != opposite) {
 		registers.setPC(immediateData16());
+		jumped = true;
 	}
 }
 
@@ -86,7 +88,6 @@ void Cpu::tick()
 	std::map<u16, Instruction>::iterator iterator = instructions.find(opcode);
 
 	if (iterator != instructions.end()) {
-		u16 beforeInstructionPC = registers.getPC();
 		Instruction instruction = instructions.at(opcode);
 
 		//std::cout << "Executing instruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << std::endl;
@@ -98,7 +99,10 @@ void Cpu::tick()
 				<< "\tInstruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << std::endl;
 		}
 		instruction.implementation();
-		if (beforeInstructionPC == registers.getPC()) {
+		if (jumped) {
+			jumped = false;
+		}
+		else {
 			registers.incrementPC(instruction.lenght);
 		}
 		//return true;
