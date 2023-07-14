@@ -12,6 +12,11 @@ Cpu::Cpu(Bus* bus)
 	registers.setPC(0x100);
 }
 
+bool Cpu::isRunning()
+{
+	return running;
+}
+
 u8 Cpu::immediateData()
 {
 	return bus->read(registers.getPC() + 1);
@@ -91,34 +96,29 @@ u16 Cpu::instructionsCount()
 	return count;
 }
 
-
-
 void Cpu::tick()
 {
-	u8 opcode = bus->read(registers.getPC());
-	Instruction instruction = instructions[opcode];
+	if (running) {
+		u8 opcode = bus->read(registers.getPC());
+		Instruction instruction = instructions[opcode];
 
-	if (true) {//iterator != instructions.end()) {
-
-		//std::cout << "Executing instruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << std::endl;
-//		std::cout << "PC: " << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)registers.getPC()
-//			<< "\t Instruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << std::endl;
-		if (biggestPC < registers.getPC()) {
-			biggestPC = registers.getPC();
-			std::cout << "Biggest PC: " << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)biggestPC
-				<< "\tInstruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << std::endl;
-		}
-		instruction.implementation();
-		if (jumped) {
-			jumped = false;
+		if (instruction.implementation != nullptr) {
+			if (biggestPC < registers.getPC()) {
+				biggestPC = registers.getPC();
+				std::cout << "Biggest PC: " << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)biggestPC
+					<< "\tInstruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << std::endl;
+			}
+			instruction.implementation();
+			if (jumped) {
+				jumped = false;
+			}
+			else {
+				registers.incrementPC(instruction.lenght);
+			}
 		}
 		else {
-			registers.incrementPC(instruction.lenght);
+			running = false;
+			std::cout << "Instruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << " not implemented" << std::endl;
 		}
-		//return true;
-	}
-	else {
-		std::cout << "Instruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << " not implemented" << std::endl;
-		//return false;
 	}
 }

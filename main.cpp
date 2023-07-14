@@ -1,5 +1,5 @@
 #include "Emulator.h"
 
 int main() {
-	Emulator().run();
+	Emulator().run(true, true);
 }

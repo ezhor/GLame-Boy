@@ -30,13 +30,14 @@ public:
 
 	void init();
 	void tick();
-	void drawTile(u8 tileX, u8 tileY);
-	Color getPixelColor(u16 tiledataLocation, u8 offsetX, u8 offsetY);
 
 private:
 	Bus* bus;
 	Renderer* renderer;
 	Color colors[4];
+
+	void drawTile(u8 tileX, u8 tileY);
+	Color getPixelColor(u16 tiledataLocation, u8 offsetX, u8 offsetY);
 	u8 bitFromByte(u8 byte, u8 bitPosition);
 };
 

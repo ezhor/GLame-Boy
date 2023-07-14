@@ -11,7 +11,7 @@ public:
 		renderer.init();
 		ppu.init();
 	}
-	void run();
+	void run(bool multithread, bool testMode);
 
 private:
 	Bus bus;

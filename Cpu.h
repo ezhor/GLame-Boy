@@ -23,13 +23,14 @@ public:
 	Cpu(Bus* bus);
 	void loadInstructions();
 	void tick();
+	bool isRunning();
 private:
 	Registers registers;
 	Bus* bus;
 	Instruction instructions[512];
+	bool running = true;
 
 	u16 instructionsCount();
-
 	u8 immediateData();
 	u16 immediateData16();
 	void cp(u8 value);
