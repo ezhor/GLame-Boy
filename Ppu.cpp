@@ -17,9 +17,6 @@ void Ppu::tick()
 			}
 		}
 		renderer->sendTextureData();
-		std::cout << "Tilemap ROM" << std::endl;
-		bus->printMemory(0x5F3, 0x240);
-		bus->printTilemapMemory();
 	}
 }
 
@@ -42,7 +39,7 @@ Color Ppu::getPixelColor(u16 tiledataLocation, u8 offsetX, u8 offsetY)
 	u8 line1 = bus->read(tiledataLocation + offsetY * 2);
 	u8 line2 = bus->read(tiledataLocation + (offsetY * 2) + 1);
 
-	u8 value = (u8)(bitFromByte(line1, offsetX) << 1) + bitFromByte(line2, offsetX);
+	u8 value = (u8)3- ((u8)(bitFromByte(line2, offsetX) << 1) + bitFromByte(line1, offsetX));
 
 	return colors[value];
 }
