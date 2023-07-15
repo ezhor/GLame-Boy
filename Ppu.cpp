@@ -25,7 +25,7 @@ void Ppu::tick()
 
 void Ppu::drawTile(u8 tileX, u8 tileY)
 {
-	u16 tiledataLocation = VRAM_LOCATION_TILEDATA_START + bus->read(VRAM_LOCATION_TILEMAP_START + (tileY * TILEMAP_WIDTH) + tileX);
+	u16 tiledataLocation = VRAM_LOCATION_TILEDATA_START + (bus->read(VRAM_LOCATION_TILEMAP_START + (tileY * TILEMAP_WIDTH) + tileX) << 4);
 	for (int y = 0; y < 8; y++) {
 		for (int x = 0; x < 8; x++) {
 			int colorPosition = ((SCREEN_HEIGHT - 1 - (tileY * 8 + y)) * SCREEN_WIDTH + (tileX * 8 + x)) * 3;
