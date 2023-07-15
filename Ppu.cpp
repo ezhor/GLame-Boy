@@ -17,13 +17,15 @@ void Ppu::tick()
 			}
 		}
 		renderer->sendTextureData();
-		bus->printMemory();
+		std::cout << "Tilemap ROM" << std::endl;
+		bus->printMemory(0x5F3, 0x240);
+		bus->printTilemapMemory();
 	}
 }
 
 void Ppu::drawTile(u8 tileX, u8 tileY)
 {
-	u16 tiledataLocation = VRAM_LOCATION_TILEDATA_START + bus->read(VRAM_LOCATION_TILEMAP_START + (tileY * SCREEN_WIDTH / 8) + tileX);
+	u16 tiledataLocation = VRAM_LOCATION_TILEDATA_START + bus->read(VRAM_LOCATION_TILEMAP_START + (tileY * TILEMAP_WIDTH) + tileX);
 	for (int y = 0; y < 8; y++) {
 		for (int x = 0; x < 8; x++) {
 			int colorPosition = ((SCREEN_HEIGHT - 1 - (tileY * 8 + y)) * SCREEN_WIDTH + (tileX * 8 + x)) * 3;

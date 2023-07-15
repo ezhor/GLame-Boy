@@ -33,13 +33,19 @@ void Bus::write(u16 location, u8 value)
 	}
 }
 
-void Bus::printVram()
+void Bus::printMemory(u16 location, u16 bytesCount)
 {
-	for (u16 i = 0; i < (SCREEN_WIDTH / 8) * (SCREEN_HEIGHT / 8); i += SCREEN_WIDTH / 8)
+	for (u16 i = 0; i < bytesCount; i += 20)
 	{
-		for (u16 j = 0; j < SCREEN_WIDTH / 8; j++) {
-			std::cout << "0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)read(VRAM_LOCATION_TILEMAP_START + i + j) << ", ";
+		for (u16 j = 0; j < 20; j++) {
+			std::cout << "0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)read(location + i + j) << ", ";
 		}
 		std::cout << std::endl;
 	}
+}
+
+void Bus::printTilemapMemory()
+{
+	std::cout << "Tilemap Memory:" << std::endl;
+	printMemory(VRAM_LOCATION_TILEMAP_START, (SCREEN_WIDTH / 8) * (SCREEN_HEIGHT / 8));
 }
