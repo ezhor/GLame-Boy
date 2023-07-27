@@ -34,9 +34,13 @@ private:
 	u8 immediateData();
 	u16 immediateData16();
 	void cp(u8 value);
-	void sub(u8 value);
+	u8 decrement(u8 value);
 	void logicOr(u8 value);
-	void jp(u8 flag, bool opposite);
-	void jp(u8 flag);
+	void logicXor(u8 value);
+	u8 rotateRight(u8 value);
+	void jump(u8 flag, bool opposite);
+	void jump(u8 flag);
+	void jumpRelative(u8 flag, bool opposite);
+	void jumpRelative(u8 flag);
 };
 

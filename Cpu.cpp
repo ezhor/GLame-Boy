@@ -34,21 +34,50 @@ void Cpu::cp(u8 value) {
 	registers.setFlag(C_FLAG, registers.getA() < value);
 }
 
-void Cpu::sub(u8 value) {
-	registers.setA(registers.getA() - value);
-
+u8 Cpu::decrement(u8 value)
+{
+	u8 previousValue = value;
+	value--;
+	registers.setFlag(Z_FLAG, value == 0);
+	registers.setFlag(N_FLAG, true);
+	registers.setFlag(H_FLAG, (value & LOWER_NIBBLE) > (previousValue & LOWER_NIBBLE));
+	return value;
 }
 
 void Cpu::logicOr(u8 value)
 {
-	registers.setA(registers.getA() | registers.getC());
+	registers.setA(registers.getA() | value);
 	registers.setFlag(Z_FLAG, registers.getA() == 0);
 	registers.setFlag(N_FLAG, false);
 	registers.setFlag(H_FLAG, false);
 	registers.setFlag(C_FLAG, false);
 }
 
-void Cpu::jp(u8 flag, bool opposite)
+void Cpu::logicXor(u8 value)
+{
+	registers.setA(registers.getA() ^ value);
+	registers.setFlag(Z_FLAG, registers.getA() == 0);
+	registers.setFlag(N_FLAG, false);
+	registers.setFlag(H_FLAG, false);
+	registers.setFlag(C_FLAG, false);
+}
+
+u8 Cpu::rotateRight(u8 value) {
+	bool cFlag = registers.getFlag(C_FLAG);
+	u8 firstBit = value & 0x1;
+	value >>= 1;
+	if (cFlag) {
+		value += 0b10000000;
+	}
+
+	registers.setFlag(Z_FLAG, false);
+	registers.setFlag(N_FLAG, false);
+	registers.setFlag(H_FLAG, false);
+	registers.setFlag(C_FLAG, firstBit == 0x1);
+	return value;
+}
+
+void Cpu::jump(u8 flag, bool opposite)
 {
 	if (registers.getFlag(flag) != opposite) {
 		registers.setPC(immediateData16());
@@ -56,20 +85,34 @@ void Cpu::jp(u8 flag, bool opposite)
 	}
 }
 
-void Cpu::jp(u8 flag)
+void Cpu::jump(u8 flag)
 {
-	jp(flag, false);
+	jump(flag, false);
+}
+
+void Cpu::jumpRelative(u8 flag, bool opposite)
+{
+	if (registers.getFlag(flag) != opposite) {
+		registers.setPC(registers.getPC() + immediateData());
+		jumped = true;
+	}
+}
+
+void Cpu::jumpRelative(u8 flag)
+{
+	jumpRelative(flag, false);
 }
 
 void Cpu::loadInstructions()
 {
+	// Hello World
 	instructions[0x00] = { 1, 4, []() {;} }; // NOP
-	instructions[0xC3] = { 3, 16, [this]() {jp(NO_FLAG);} }; // JP a16
+	instructions[0xC3] = { 3, 16, [this]() {jump(NO_FLAG);} }; // JP a16
 	instructions[0x3E] = { 2, 8, [this]() {registers.setA(immediateData());} }; // LD A,d8
 	instructions[0xEA] = { 3, 16, [this]() {bus->write(immediateData16(), registers.getA());} }; // LD (a16),A
 	instructions[0xFA] = { 3, 16, [this]() {registers.setA(bus->read(immediateData16()));} }; // LD A,(a16)
 	instructions[0xFE] = { 2, 8, [this]() {cp(immediateData());} }; // CP d8
-	instructions[0xDA] = { 3, 8, [this]() {jp(C_FLAG);} }; // JP C,a16
+	instructions[0xDA] = { 3, 8, [this]() {jump(C_FLAG);} }; // JP C,a16
 	instructions[0x01] = { 3, 16, [this]() {registers.setBC(immediateData16());} }; // LD BC,d16
 	instructions[0x11] = { 3, 12, [this]() {registers.setDE(immediateData16());} }; // LD DE,d16
 	instructions[0x21] = { 3, 12, [this]() {registers.setHL(immediateData16());} }; // LD HL,d16
@@ -79,7 +122,17 @@ void Cpu::loadInstructions()
 	instructions[0x0B] = { 1, 8, [this]() {registers.decrementBC();} }; // DEC BC
 	instructions[0x78] = { 1, 4, [this]() {registers.setA(registers.getB());} }; // LD A,B
 	instructions[0xB1] = { 1, 4, [this]() {logicOr(registers.getC());} }; // OR C
-	instructions[0xC2] = { 3, 16, [this]() {jp(Z_FLAG, true);} }; // JP NZ,a16
+	instructions[0xC2] = { 3, 16, [this]() {jump(Z_FLAG, true);} }; // JP NZ,a16
+	// Tetris
+	instructions[0xAF] = { 1, 4, [this]() {logicXor(registers.getA());} }; // XOR A
+	instructions[0x0E] = { 2, 8, [this]() {registers.setC(immediateData());} }; // LD C,d8
+	instructions[0x06] = { 2, 8, [this]() {registers.setB(immediateData());} }; // LD B,d8
+	instructions[0x32] = { 1, 8, [this]() {bus->write(registers.getHLD(), registers.getA());} }; // LD (HL-),A
+	instructions[0x05] = { 1, 4, [this]() {registers.setB(decrement(registers.getB()));} }; // DEC B
+	instructions[0x20] = { 2, 12, [this]() {jumpRelative(Z_FLAG, true);} }; // JR NZ,r8
+	instructions[0x1D] = { 1, 4, [this]() {registers.setE(decrement(registers.getE()));} }; // DEC E
+	instructions[0x16] = { 2, 8, [this]() {registers.setD(immediateData());} }; // LD D,d8
+	instructions[0x1F] = { 1, 4, [this]() {registers.setA(rotateRight(registers.getA()));} }; // LD D,d8
 
 	std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;
 }
@@ -103,11 +156,8 @@ void Cpu::tick()
 		Instruction instruction = instructions[opcode];
 
 		if (instruction.implementation != nullptr) {
-			if (biggestPC < registers.getPC()) {
-				biggestPC = registers.getPC();
-				std::cout << "Biggest PC: " << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)biggestPC
-					<< "\tInstruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << std::endl;
-			}
+			std::cout << "PC: " << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)registers.getPC()
+				<< "\tInstruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << std::endl;
 			instruction.implementation();
 			if (jumped) {
 				jumped = false;
@@ -118,7 +168,7 @@ void Cpu::tick()
 		}
 		else {
 			running = false;
-			std::cout << "Instruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << " not implemented" << std::endl;
+			std::cout << "Instruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << " not implemented (PC: " << registers.getPC() << ")" << std::endl;
 		}
 	}
 }

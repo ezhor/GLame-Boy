@@ -5,8 +5,8 @@
 #include <iomanip>
 
 void Bus::load() {
-	std::ifstream file("D:\\Code\\GameBoy\\1.HelloWorld\\out\\hello-world.gb", std::ios::binary | std::ios::ate);
-	//std::ifstream file("D:\\Code\\tetris.gb", std::ios::binary | std::ios::ate);
+	//std::ifstream file("D:\\Code\\GameBoy\\1.HelloWorld\\out\\hello-world.gb", std::ios::binary | std::ios::ate);
+	std::ifstream file("D:\\Code\\tetris.gb", std::ios::binary | std::ios::ate);
 	std::streamsize size = file.tellg();
 	file.seekg(0, std::ios::beg);
 	file.read(memory, size);

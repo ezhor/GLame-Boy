@@ -48,6 +48,16 @@ void Registers::setB(u8 value)
 	*b = value;
 }
 
+u8 Registers::getD()
+{
+	return *d;
+}
+
+void Registers::setD(u8 value)
+{
+	*d = value;
+}
+
 u8 Registers::getC()
 {
 	return *c;
@@ -115,6 +125,11 @@ u16 Registers::getHL()
 
 u16 Registers::getHLI() {
 	return hl++;
+}
+
+u16 Registers::getHLD()
+{
+	return hl--;
 }
 
 void Registers::setHL(u16 value)
