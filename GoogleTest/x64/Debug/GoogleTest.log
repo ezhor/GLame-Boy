@@ -1,3 +1,2 @@
 ﻿  EmulatorTests.cpp
-D:\Code\GLame-Boy\GoogleTest\EmulatorTests.cpp(23,51): warning C4244: 'argumento': conversión de 'unsigned short' a 'unsigned char'; posible pérdida de datos
   GoogleTest.vcxproj -> D:\Code\GLame-Boy\x64\Debug\GoogleTest.exe

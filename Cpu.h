@@ -26,8 +26,8 @@ public:
 	void tick();
 	bool isRunning();
 	Registers registers;
-private:
 	Bus* bus;
+private:
 	Instruction instructions[512];
 	bool running = true;
 
