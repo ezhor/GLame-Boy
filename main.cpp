@@ -1,5 +1,7 @@
 #include "Emulator.h"
 
 int main() {
-	Emulator().run(true, false);
+	Emulator emulator = Emulator();
+	emulator.init();
+	emulator.run(true, false);
 }

@@ -15,6 +15,7 @@
 #define VBlank 0x90
 
 //Memory locations
+#define INITIAL_PROGRAM_COUNTER 0x100
 #define rLY 0xFF44
 #define VRAM_LOCATION_START 0x8000
 #define VRAM_LOCATION_END 0x9FFF

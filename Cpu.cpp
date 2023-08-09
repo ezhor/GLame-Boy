@@ -8,8 +8,7 @@ bool jumped = false;
 Cpu::Cpu(Bus* bus)
 {
 	this->bus = bus;
-	bus->load();
-	registers.setPC(0x100);
+	registers.setPC(INITIAL_PROGRAM_COUNTER);
 }
 
 bool Cpu::isRunning()
@@ -32,6 +31,26 @@ void Cpu::cp(u8 value) {
 	registers.setFlag(N_FLAG, true);
 	registers.setFlag(H_FLAG, (registers.getA() & LOWER_NIBBLE) < (value & LOWER_NIBBLE));
 	registers.setFlag(C_FLAG, registers.getA() < value);
+}
+
+u8 Cpu::increment(u8 value)
+{
+	u8 previousValue = value;
+	value++;
+	registers.setFlag(Z_FLAG, value == 0);
+	registers.setFlag(N_FLAG, false);
+	registers.setFlag(H_FLAG, (value & LOWER_NIBBLE) < (previousValue & LOWER_NIBBLE));
+	return value;
+}
+
+u16 Cpu::increment16(u16 value)
+{
+	u16 previousValue = value;
+	value++;
+	registers.setFlag(Z_FLAG, value == 0);
+	registers.setFlag(N_FLAG, false);
+	registers.setFlag(H_FLAG, (value & LOWER_BYTE) < (previousValue & LOWER_BYTE));
+	return value;
 }
 
 u8 Cpu::decrement(u8 value)
@@ -103,6 +122,16 @@ void Cpu::jumpRelative(u8 flag)
 	jumpRelative(flag, false);
 }
 
+u16 Cpu::add16(u16 a, u16 b)
+{
+	u16 previousA = a;
+	a = a + b;
+	registers.setFlag(N_FLAG, false);
+	registers.setFlag(H_FLAG, (a & LOWER_NIBBLE) < (previousA & LOWER_NIBBLE));
+	registers.setFlag(C_FLAG, a < previousA);
+	return a;
+}
+
 void Cpu::loadInstructions()
 {
 	// Hello World
@@ -132,7 +161,16 @@ void Cpu::loadInstructions()
 	instructions[0x20] = { 2, 12, [this]() {jumpRelative(Z_FLAG, true);} }; // JR NZ,r8
 	instructions[0x1D] = { 1, 4, [this]() {registers.setE(decrement(registers.getE()));} }; // DEC E
 	instructions[0x16] = { 2, 8, [this]() {registers.setD(immediateData());} }; // LD D,d8
-	instructions[0x1F] = { 1, 4, [this]() {registers.setA(rotateRight(registers.getA()));} }; // LD D,d8
+	instructions[0x1F] = { 1, 4, [this]() {registers.setA(rotateRight(registers.getA()));} }; // RRA
+	instructions[0x25] = { 1, 4, [this]() {registers.setH(decrement(registers.getH()));} }; // DEC H
+	instructions[0x15] = { 1, 4, [this]() {registers.setD(decrement(registers.getD()));} }; // DEC D
+	instructions[0xB0] = { 1, 4, [this]() {logicOr(registers.getB());} }; // OR B
+	instructions[0x14] = { 1, 4, [this]() {registers.setD(increment(registers.getD()));} }; // INC D
+	instructions[0x7B] = { 1, 4, [this]() {registers.setA(registers.getE());} }; // LD A,E
+	instructions[0xBF] = { 1, 4, [this]() {cp(registers.getA());} }; // CP A
+	instructions[0x29] = { 1, 8, [this]() {registers.setHL(add16(registers.getHL(),registers.getHL()));} }; // ADD HL,HL
+	instructions[0x19] = { 1, 8, [this]() {registers.setHL(add16(registers.getHL(),registers.getDE()));} }; // ADD HL,DE
+	instructions[0x77] = { 1, 8, [this]() {bus->write(registers.getHL(), registers.getA());} }; // LD (HL),A
 
 	std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;
 }
@@ -155,9 +193,12 @@ void Cpu::tick()
 		u8 opcode = bus->read(registers.getPC());
 		Instruction instruction = instructions[opcode];
 
+		std::cout << "Program Counter: " << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)registers.getPC()
+			<< " -> Instruction: 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode;
+
 		if (instruction.implementation != nullptr) {
-			std::cout << "PC: " << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)registers.getPC()
-				<< "\tInstruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << std::endl;
+			std::cout << " -> OK" << std::endl;
+
 			instruction.implementation();
 			if (jumped) {
 				jumped = false;
@@ -168,7 +209,7 @@ void Cpu::tick()
 		}
 		else {
 			running = false;
-			std::cout << "Instruction 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << " not implemented (PC: " << registers.getPC() << ")" << std::endl;
+			std::cout << std::endl << "ERROR: INSTRUCTION NOT IMPLEMENTED (0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << ")" << std::endl;
 		}
 	}
 }

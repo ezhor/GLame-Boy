@@ -4,7 +4,7 @@
 class Bus
 {
 public:
-	void load();
+	void load(const char*);
 	u8 read(u16 location);
 	u16 read16(u16 location);
 	void write(u16 location, u8 value);

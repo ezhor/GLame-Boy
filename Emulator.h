@@ -6,14 +6,10 @@
 class Emulator
 {
 public:
-	Emulator() :bus(), cpu(&bus), renderer(), ppu(&bus, &renderer) {
-		cpu.loadInstructions();
-		renderer.init();
-		ppu.init();
-	}
+	Emulator() :bus(), cpu(&bus), renderer(), ppu(&bus, &renderer){}
+	void init();
 	void run(bool multithread, bool testMode);
 
-private:
 	Bus bus;
 	Cpu cpu;
 	Renderer renderer;

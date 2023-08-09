@@ -41,7 +41,7 @@ void Renderer::init() {
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cout << "Failet to initialize GLAD" << std::endl;
 	}
-
+	glfwSetWindowPos(window, 800, 100);
 	glfwSetKeyCallback(window, keyCallback);
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);

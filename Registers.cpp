@@ -83,6 +83,11 @@ u8 Registers::getH()
 	return *h;
 }
 
+void Registers::setH(u8 value)
+{
+	*h = value;
+}
+
 void Registers::setL(u8 value)
 {
 	*l = value;
