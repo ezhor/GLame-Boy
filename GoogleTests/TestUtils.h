@@ -5,4 +5,3 @@ class TestUtils
 public:
 	static Emulator* GetEmulator();
 };
-

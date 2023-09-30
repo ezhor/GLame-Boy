@@ -6,8 +6,14 @@
 class Renderer
 {
 public:
-	GLFWwindow* window;
-	u8 texture[SCREEN_WIDTH * SCREEN_HEIGHT * 3];
+	Renderer() {
+		instances++;
+	}
+
+	inline static int instances = 0;
+	GLFWwindow* window = nullptr;
+	u8 texture[SCREEN_WIDTH * SCREEN_HEIGHT * 3] = {};
+
 	void init();
 	void draw();
 	void sendTextureData();

@@ -3,6 +3,7 @@
 
 Registers::Registers()
 {
+	instances++;
 	a = 0;
 	f = 0;
 	bc = 0;

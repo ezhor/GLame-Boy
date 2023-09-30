@@ -7,6 +7,7 @@ bool jumped = false;
 
 Cpu::Cpu(Bus* bus)
 {
+	instances++;
 	this->bus = bus;
 	registers.setPC(INITIAL_PROGRAM_COUNTER);
 }
@@ -172,7 +173,9 @@ void Cpu::loadInstructions()
 	instructions[0x19] = { 1, 8, [this]() {registers.setHL(add16(registers.getHL(),registers.getDE()));} }; // ADD HL,DE
 	instructions[0x77] = { 1, 8, [this]() {bus->write(registers.getHL(), registers.getA());} }; // LD (HL),A
 
-	std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;
+	if (verbose) {
+		std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;
+	}
 }
 
 u16 Cpu::instructionsCount()
@@ -193,11 +196,15 @@ void Cpu::tick()
 		u8 opcode = bus->read(registers.getPC());
 		Instruction instruction = instructions[opcode];
 
-		std::cout << "Program Counter: " << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)registers.getPC()
-			<< " -> Instruction: 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode;
+		if (verbose) {
+			std::cout << "Program Counter: " << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)registers.getPC()
+				<< " -> Instruction: 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode;
+		}
 
 		if (instruction.implementation != nullptr) {
-			std::cout << " -> OK" << std::endl;
+			if (verbose) {
+				std::cout << " -> OK" << std::endl;
+			}
 
 			instruction.implementation();
 			if (jumped) {
@@ -209,7 +216,9 @@ void Cpu::tick()
 		}
 		else {
 			running = false;
-			std::cout << std::endl << "ERROR: INSTRUCTION NOT IMPLEMENTED (0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << ")" << std::endl;
+			if (verbose) {
+				std::cout << std::endl << "ERROR: INSTRUCTION NOT IMPLEMENTED (0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << ")" << std::endl;
+			}
 		}
 	}
 }

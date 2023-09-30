@@ -4,6 +4,12 @@
 class Bus
 {
 public:
+	Bus() {
+		instances++;
+	}
+
+	inline static int instances = 0;
+
 	void load(const char*);
 	u8 read(u16 location);
 	u16 read16(u16 location);

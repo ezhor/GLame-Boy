@@ -20,6 +20,7 @@ class Ppu
 {
 public:
 	Ppu(Bus* bus, Renderer* renderer) {
+		instances++;
 		this->bus = bus;
 		this->renderer = renderer;
 		this->colors[0] = Color(0x40, 0x50, 0x10);
@@ -27,6 +28,8 @@ public:
 		this->colors[2] = Color(0xA0, 0xA8, 0x40);
 		this->colors[3] = Color(0xD0, 0xD0, 0x58);
 	}
+
+	inline static int instances = 0;
 
 	void init();
 	void tick();

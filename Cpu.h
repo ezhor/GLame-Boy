@@ -22,11 +22,15 @@ class Cpu
 
 public:
 	Cpu(Bus* bus);
+
+	inline static int instances = 0;
+	bool verbose = true;
+	Registers registers;
+	Bus* bus;
+
 	void loadInstructions();
 	void tick();
 	bool isRunning();
-	Registers registers;
-	Bus* bus;
 private:
 	Instruction instructions[512];
 	bool running = true;

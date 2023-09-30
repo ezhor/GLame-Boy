@@ -5,6 +5,9 @@ class Registers
 {
 public:
 	Registers();
+
+	inline static int instances = 0;
+
 	u8 getA();
 	void setA(u8 value);
 

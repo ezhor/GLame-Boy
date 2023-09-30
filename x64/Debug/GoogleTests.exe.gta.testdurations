@@ -8,5 +8,12 @@
     <TestDuration Test="JPa16.jump" Duration="1" />
     <TestDuration Test="ProgramCounter.CorrectInitialValue" Duration="1" />
     <TestDuration Test="JPa16.Jump" Duration="1" />
+    <TestDuration Test="MemoryInstances.ZeroEmulatorInstances" Duration="1" />
+    <TestDuration Test="MemoryInstances.SingleEmulatorInstance" Duration="1" />
+    <TestDuration Test="MemoryInstances.SingleCpuInstance" Duration="1" />
+    <TestDuration Test="MemoryInstances.SingleRendererInstance" Duration="1" />
+    <TestDuration Test="MemoryInstances.SinglePpuInstance" Duration="1" />
+    <TestDuration Test="MemoryInstances.SingleRegistersInstance" Duration="1" />
+    <TestDuration Test="MemoryInstances.SingleBusInstance" Duration="1" />
   </TestDurations>
 </GtaTestDurations>
