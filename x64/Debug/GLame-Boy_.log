@@ -1,0 +1,10 @@
+﻿  Bus.cpp
+  Cpu.cpp
+  Emulator.cpp
+  Ppu.cpp
+  Registers.cpp
+  Renderer.cpp
+  Main.cpp
+  Generando código...
+  glad.c
+  GLame-Boy_.vcxproj -> D:\Code\GLame-Boy\x64\Debug\GLame-Boy_.lib
