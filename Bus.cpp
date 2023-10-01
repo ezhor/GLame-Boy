@@ -33,6 +33,14 @@ void Bus::write(u16 location, u8 value)
 	}
 }
 
+void Bus::write16(u16 location, u16 value)
+{
+	u8 highByte = (value & 0xFF00) >> 8;
+	u8 lowByte = value & 0xFF;
+	write(location, lowByte);
+	write(location + 1, highByte);
+}
+
 void Bus::printMemory(u16 location, u16 bytesCount)
 {
 	for (u16 i = 0; i < bytesCount; i += 20)

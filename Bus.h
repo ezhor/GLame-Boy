@@ -14,6 +14,7 @@ public:
 	u8 read(u16 location);
 	u16 read16(u16 location);
 	void write(u16 location, u8 value);
+	void write16(u16 location, u16 value);
 	bool updateVram;
 	void printMemory(u16 location, u16 bytesCount);
 	void printTilemapMemory();
