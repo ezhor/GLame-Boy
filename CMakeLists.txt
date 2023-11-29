@@ -7,7 +7,9 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
 endif(MSVC)
 
+add_subdirectory(dependencies/GLFW)
+target_include_directories(GLAD, PUBLIC dependencies/GLFW)
 
 add_executable(${PROJECT_NAME} ./src/GLameBoy ./src/GLameBoy/main.cpp)
-
-target_include_directories(${PROJECT_NAME} PUBLIC ./src/GLameBoy)
+target_link_libraries(${PROJECT_NAME} PUBLIC dependencies/GLFW)
+target_link_libraries(${PROJECT_NAME} PUBLIC dependencies/GLAD)
