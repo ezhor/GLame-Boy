@@ -7,7 +7,7 @@ on:
     branches: [ master, main ]
 
 jobs:
-  build:
+  Build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -15,9 +15,8 @@ jobs:
       run: sudo apt-get install libgtest-dev && cd /usr/src/gtest && sudo cmake CMakeLists.txt && sudo make && sudo cp lib/*.a /usr/lib && sudo ln -s /usr/lib/libgtest.a /usr/local/lib/libgtest.a && sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/libgtest_main.a
     - name: Install libraries required by GLFW
       run: sudo apt-get install xorg-dev libglu1-mesa-dev
-    - name: Download GLFW
-      run: git submodule init && git submodule update
-    - name: CMake
+    - name: CMake config
       run: cmake -S ./ -B build/
-    - name: Build
+    - name: CMake build
       run: cmake --build build/
+    
