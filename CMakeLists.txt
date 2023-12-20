@@ -7,9 +7,43 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
 endif(MSVC)
 
-add_subdirectory(dependencies/GLFW)
-target_include_directories(GLAD, PUBLIC dependencies/GLFW)
+# Dependencies
 
-add_executable(${PROJECT_NAME} ./src/GLameBoy ./src/GLameBoy/main.cpp)
-target_link_libraries(${PROJECT_NAME} PUBLIC dependencies/GLFW)
-target_link_libraries(${PROJECT_NAME} PUBLIC dependencies/GLAD)
+# glad
+add_subdirectory(dependencies/glad/)
+
+# GLFW
+include(FetchContent)
+FetchContent_Declare(
+	glfw
+	GIT_REPOSITORY https://github.com/glfw/glfw.git
+	GIT_TAG 3.3.8
+)
+FetchContent_MakeAvailable(glfw)
+
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+# Executable
+
+add_executable(${PROJECT_NAME}
+	./src/GLameBoy/main.cpp
+	./src/GLameBoy/Emulator.h
+	./src/GLameBoy/Emulator.cpp
+	./src/GLameBoy/Renderer.h
+	./src/GLameBoy/Renderer.cpp
+	./src/GLameBoy/Cpu.h
+	./src/GLameBoy/Cpu.cpp
+	./src/GLameBoy/Ppu.h
+	./src/GLameBoy/Ppu.cpp
+	./src/GLameBoy/Bus.h
+	./src/GLameBoy/Bus.cpp
+	./src/GLameBoy/Registers.h
+	./src/GLameBoy/Registers.cpp
+	./src/GLameBoy/Common.h
+)
+target_link_libraries(${PROJECT_NAME} glfw)
+target_link_libraries(${PROJECT_NAME} glad)
+target_include_directories(${PROJECT_NAME} PUBLIC dependencies/GLFW/include)
+target_include_directories(${PROJECT_NAME} PUBLIC dependencies/glad/include)
