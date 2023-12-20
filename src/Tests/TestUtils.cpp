@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "TestUtils.h"
 
 Emulator* TestUtils::GetEmulator()

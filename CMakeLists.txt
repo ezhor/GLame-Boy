@@ -25,8 +25,14 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-# Executable
 
+# Google Tests
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+add_subdirectory(dependencies/googletest)
+include(GoogleTest)
+add_subdirectory(src/Tests)
+
+# Executable
 add_executable(${PROJECT_NAME}
 	./src/GLameBoy/main.cpp
 	./src/GLameBoy/Emulator.h
