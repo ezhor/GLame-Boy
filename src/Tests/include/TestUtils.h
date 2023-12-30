@@ -1,5 +1,5 @@
 #pragma once
-#include "../GLameBoy/Emulator.h"
+#include "Emulator.h"
 class TestUtils
 {
 public:
