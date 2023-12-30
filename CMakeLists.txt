@@ -34,7 +34,16 @@ include(GoogleTest)
 
 ################################## GLameBoy ##################################
 
-enable_testing()
-add_subdirectory(src/Tests)
 add_subdirectory(src/Emulator)
 add_subdirectory(src/Main)
+
+
+################################## Tests ##################################
+
+enable_testing()
+add_subdirectory(src/Tests)
+add_custom_target(AllTests ALL
+	COMMAND ${CMAKE_CTEST_COMMAND} ${CMAKE_BINARY_DIR}
+	DEPENDS Tests
+	COMMENT "Running tests"
+)
