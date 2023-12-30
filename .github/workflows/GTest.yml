@@ -15,11 +15,15 @@ jobs:
       run: sudo apt update
     - name: Install libraries required by GLFW
       run: sudo apt-get install xorg-dev libglu1-mesa-dev
-    - name: Download Git submodules
+    - name: Init Git submodules
       run: git submodule init
+    - name: Update Git submodules
+      run: git submodule update
     - name: CMake config
       run: cmake -S ./ -B build/
     - name: CMake build
       run: cmake --build build/
-    - name: GTests on CTest
-      run: cd build & ctest .
+    - name: Move to build directory
+      run: cd build
+    - name: Run tests
+      run: ctest .
