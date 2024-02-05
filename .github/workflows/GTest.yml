@@ -23,3 +23,6 @@ jobs:
       run: cmake -S ./ -B build/
     - name: CMake build
       run: cmake --build build/
+    - name: Coveralls GitHub Action
+      uses: coverallsapp/github-action@v2.2.3
+            
