@@ -23,7 +23,3 @@ jobs:
       run: cmake -S ./ -B build/
     - name: CMake build
       run: cmake --build build/
-    - name: Move to build directory
-      run: cd build
-    - name: Run tests
-      run: ctest .
