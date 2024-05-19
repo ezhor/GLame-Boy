@@ -1,7 +1,7 @@
 #pragma once
 // Types
-#define u8 unsigned char
-#define u16 unsigned short
+typedef unsigned char u8;
+typedef unsigned short u16;
 
 // Screen
 #define SCREEN_SCALE 4
@@ -11,10 +11,10 @@
 #define SCALED_SCREEN_HEIGHT SCREEN_HEIGHT * SCREEN_SCALE
 #define TILEMAP_WIDTH 32
 
-//Values
+// Interruptions
 #define VBlank 0x90
 
-//Memory locations
+// Memory locations
 #define INITIAL_PROGRAM_COUNTER 0x100
 #define rLY 0xFF44
 #define VRAM_LOCATION_START 0x8000

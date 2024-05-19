@@ -3,5 +3,6 @@
 class TestUtils
 {
 public:
-	static Emulator* GetEmulator();
+	static Emulator* getEmulator();
+	static void testCP(u8 registerValue, u8 immediateValue, u8 flag, bool flagValue);
 };
