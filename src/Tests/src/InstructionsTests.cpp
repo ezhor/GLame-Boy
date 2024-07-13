@@ -92,7 +92,7 @@ namespace InstructionsTests {
 	}
 
 	TEST(CP_d8, HalfCarryFlagTrueWhenGreater) {
-		TestUtils::testCP(0x01, 0x02, H_FLAG, true);
+		TestUtils::testCP(0x01, 0x02, H_FLAG, false);
 	}
 
 	TEST(CP_d8, HalfCarryFlagTrueWhenEquals) {

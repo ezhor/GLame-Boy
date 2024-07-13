@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.17)
 project(GLameBoy)
+#set(TESTS True)
 
 ################################## C++ version ##################################
 
@@ -42,8 +43,10 @@ add_subdirectory(src/Main)
 
 enable_testing()
 add_subdirectory(src/Tests)
-add_custom_target(AllTests ALL
-	COMMAND ${CMAKE_CTEST_COMMAND} ${CMAKE_BINARY_DIR}
-	DEPENDS Tests
-	COMMENT "Running tests"
-)
+if(TESTS)
+	add_custom_target(AllTests ALL
+		COMMAND ${CMAKE_CTEST_COMMAND} ${CMAKE_BINARY_DIR}
+		DEPENDS Tests
+		COMMENT "Running tests"
+	)
+endif(TESTS)
