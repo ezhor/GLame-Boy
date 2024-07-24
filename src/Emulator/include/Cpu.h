@@ -38,6 +38,8 @@ private:
 	u16 instructionsCount();
 	u8 immediateData();
 	u16 immediateData16();
+	
+	u8 onesComplement(u8 value);
 
 	void cp(u8 value);
 
