@@ -164,6 +164,7 @@ void Cpu::loadInstructions() {
     instructions[0x29] = {1, 8, [this]() { registers.setHL(add16(registers.getHL(), registers.getHL())); }};  // ADD HL,HL
     instructions[0x19] = {1, 8, [this]() { registers.setHL(add16(registers.getHL(), registers.getDE())); }};  // ADD HL,DE
     instructions[0x77] = {1, 8, [this]() { bus->write(registers.getHL(), registers.getA()); }};               // LD (HL),A
+    instructions[0x0D] = {1, 4, [this]() { registers.setC(decrement(registers.getC())); }};                   // DEC C
 
     if (verbose) {
         std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;
