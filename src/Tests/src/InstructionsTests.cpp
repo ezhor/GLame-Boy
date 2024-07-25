@@ -102,4 +102,21 @@ namespace InstructionsTests {
 	TEST(CP_d8, HalfCarryFlagFalseWhenLess) {
 		TestUtils::testCP(0x02, 0x01, H_FLAG, false);
 	}
+
+	TEST(JR_NZ_r8, Jump) {
+		Emulator* emulator = TestUtils::getEmulator();
+		u8 jumpInstruction = 0x20;
+		u8 offset = 0xFC;
+		u16 startingLocation = 0x216;
+		u16 targetLocation = 0x214;
+
+		emulator->cpu.registers.setPC(startingLocation);
+		emulator->cpu.bus->write(startingLocation, jumpInstruction);
+		emulator->cpu.bus->write(startingLocation + 1, offset);
+		emulator->cpu.tick();
+
+		EXPECT_EQ(emulator->cpu.registers.getPC(), targetLocation);
+
+		delete emulator;
+	}
 }

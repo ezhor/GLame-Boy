@@ -24,12 +24,9 @@ u16 Cpu::immediateData16() {
     return bus->read16(registers.getPC() + 1);
 }
 
-u8 Cpu::onesComplement(u8 value) {
-    if (value >= 128) {
-        return 128 - value;
-    } else {
-        return value;
-    }
+signed char Cpu::twosComplement(u8 value) {
+    signed char signedValue = value;
+    return value + 2;
 }
 
 void Cpu::cp(u8 value) {
@@ -110,7 +107,8 @@ void Cpu::jump(u8 flag) {
 
 void Cpu::jumpRelative(u8 flag, bool opposite) {
     if (registers.getFlag(flag) != opposite) {
-        registers.setPC(registers.getPC() + onesComplement(immediateData()));
+        signed char signedData = immediateData();
+        registers.setPC(registers.getPC() + twosComplement(immediateData()));
         jumped = true;
     }
 }
