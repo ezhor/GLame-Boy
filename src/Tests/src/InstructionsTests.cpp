@@ -119,4 +119,22 @@ namespace InstructionsTests {
 
 		delete emulator;
 	}
+
+	TEST(JR_NZ_r8, NoJump) {
+		Emulator* emulator = TestUtils::getEmulator();
+		u8 jumpInstruction = 0x20;
+		u8 offset = 0xFC;
+		u16 startingLocation = 0x216;
+		u16 noJumpTargetLocation = 0x218;
+
+		emulator->cpu.registers.setFlag(Z_FLAG, true);
+		emulator->cpu.registers.setPC(startingLocation);
+		emulator->cpu.bus->write(startingLocation, jumpInstruction);
+		emulator->cpu.bus->write(startingLocation + 1, offset);
+		emulator->cpu.tick();
+
+		EXPECT_EQ(emulator->cpu.registers.getPC(), noJumpTargetLocation);
+
+		delete emulator;
+	}
 }
