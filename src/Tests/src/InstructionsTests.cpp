@@ -137,4 +137,21 @@ namespace InstructionsTests {
 
 		delete emulator;
 	}
+
+	TEST(LDH_mem_a8_A, Load) {
+		Emulator* emulator = TestUtils::getEmulator();
+		u8 loadInstruction = 0xE0;
+		u8 immediateDataLocation = 0x27;
+		u16 targetLocation = 0xFF00 + immediateDataLocation;
+		u16 value = 0x28;
+
+		emulator->cpu.registers.setA(value);
+		emulator->cpu.bus->write(INITIAL_PROGRAM_COUNTER, loadInstruction);
+		emulator->cpu.bus->write(INITIAL_PROGRAM_COUNTER + 1, immediateDataLocation);
+		emulator->cpu.tick();
+
+		EXPECT_EQ(emulator->bus.read(targetLocation), value);
+
+		delete emulator;
+	}
 }
