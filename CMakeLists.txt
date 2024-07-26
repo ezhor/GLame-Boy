@@ -45,12 +45,6 @@ enable_testing()
 add_subdirectory(src/Tests)
 if(TESTS)
 	add_custom_target(AllTests ALL
-		COMMAND ${CMAKE_CTEST_COMMAND} ${CMAKE_BINARY_DIR}
-		DEPENDS Tests
-		COMMENT "Running tests"
-	)
-else()
-	add_custom_target(AllTests
 	COMMAND ${CMAKE_CTEST_COMMAND} ${CMAKE_BINARY_DIR}
 	DEPENDS Tests
 	COMMENT "Running tests"
