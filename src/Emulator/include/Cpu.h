@@ -34,6 +34,7 @@ public:
 private:
 	Instruction instructions[512];
 	bool running = true;
+	bool interrupts = true;
 
 	u16 instructionsCount();
 	u8 immediateData();
