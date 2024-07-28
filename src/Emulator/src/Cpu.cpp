@@ -167,6 +167,7 @@ void Cpu::loadInstructions() {
     instructions[0x0D] = {1, 4, [this]() { registers.setC(decrement(registers.getC())); }};                   // DEC C
     instructions[0xF3] = {1, 4, [this]() { interrupts = false; }};                                            // DI
     instructions[0xE0] = {2, 12, [this]() { bus->write(0xFF00 + immediateData(), registers.getA()); }};       // LDH (a8),A
+    instructions[0xF0] = {2, 12, [this]() { registers.setA(bus->read(0xFF00 + immediateData())); }};          // LDH A,(a8)
 
     if (verbose) {
         std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;
@@ -206,10 +207,8 @@ void Cpu::tick() {
             }
         } else {
             running = false;
-            if (verbose) {
-                std::cout << std::endl
-                          << "ERROR: INSTRUCTION NOT IMPLEMENTED (0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << ")" << std::endl;
-            }
+            std::cout << std::endl
+                      << "ERROR: INSTRUCTION NOT IMPLEMENTED (0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << ")" << std::endl;
         }
     }
 }

@@ -2,6 +2,8 @@
 #include "Common.h"
 #include <iostream>
 
+#define LY 0xFF44
+
 void Ppu::init()
 {
 	bus->write(rLY, VBlank);
