@@ -14,12 +14,14 @@ void Ppu::tick()
 	if (bus->updateVram) {
 		bus->updateVram = false;
 		for (u8 tileY = 0; tileY < SCREEN_HEIGHT / 8; tileY++) {
+			bus->write(LY, tileY);
 			for (u8 tileX = 0; tileX < SCREEN_WIDTH / 8; tileX++) {
 				drawTile(tileX, tileY);
 			}
 		}
 		renderer->sendTextureData();
 	}
+	bus->write(LY, 0x94);
 }
 
 void Ppu::drawTile(u8 tileX, u8 tileY)
