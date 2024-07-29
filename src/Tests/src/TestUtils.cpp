@@ -14,8 +14,8 @@ void TestUtils::testCP(u8 registerValue, u8 immediateValue, u8 flag, bool flagVa
 	Emulator* emulator = TestUtils::getEmulator();
 	u8 intruction = 0xFE;
 
-	emulator->cpu.bus->write(INITIAL_PROGRAM_COUNTER, intruction);
-	emulator->cpu.bus->write(INITIAL_PROGRAM_COUNTER + 1, immediateValue);
+	emulator->bus.write(INITIAL_PROGRAM_COUNTER, intruction);
+	emulator->bus.write(INITIAL_PROGRAM_COUNTER + 1, immediateValue);
 	emulator->cpu.registers.setA(registerValue);
 	emulator->cpu.tick();
 

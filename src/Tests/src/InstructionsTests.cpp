@@ -8,8 +8,8 @@ namespace InstructionsTests {
 		u8 jumpInstruction = 0xC3;
 		u16 targetLocation = 0x150;
 
-		emulator->cpu.bus->write(INITIAL_PROGRAM_COUNTER, jumpInstruction);
-		emulator->cpu.bus->write16(INITIAL_PROGRAM_COUNTER + 1, targetLocation);
+		emulator->bus.write(INITIAL_PROGRAM_COUNTER, jumpInstruction);
+		emulator->bus.write16(INITIAL_PROGRAM_COUNTER + 1, targetLocation);
 		emulator->cpu.tick();
 
 		EXPECT_EQ(emulator->cpu.registers.getPC(), targetLocation);
@@ -22,8 +22,8 @@ namespace InstructionsTests {
 		u8 loadInstruction = 0x3E;
 		u8 targetValue = 0x27;
 
-		emulator->cpu.bus->write(INITIAL_PROGRAM_COUNTER, loadInstruction);
-		emulator->cpu.bus->write(INITIAL_PROGRAM_COUNTER + 1, targetValue);
+		emulator->bus.write(INITIAL_PROGRAM_COUNTER, loadInstruction);
+		emulator->bus.write(INITIAL_PROGRAM_COUNTER + 1, targetValue);
 		emulator->cpu.tick();
 
 		EXPECT_EQ(emulator->cpu.registers.getA(), targetValue);
@@ -37,8 +37,8 @@ namespace InstructionsTests {
 		u16 memoryLocation = 0x153;
 		u8 memoryValue = 0x27;
 
-		emulator->cpu.bus->write(INITIAL_PROGRAM_COUNTER, intruction);
-		emulator->cpu.bus->write16(INITIAL_PROGRAM_COUNTER + 1, memoryLocation);
+		emulator->bus.write(INITIAL_PROGRAM_COUNTER, intruction);
+		emulator->bus.write16(INITIAL_PROGRAM_COUNTER + 1, memoryLocation);
 		emulator->cpu.registers.setA(memoryValue);
 		emulator->cpu.tick();
 
@@ -53,9 +53,9 @@ namespace InstructionsTests {
 		u16 memoryLocation = 0x153;
 		u8 memoryValue = 0x27;
 
-		emulator->cpu.bus->write(INITIAL_PROGRAM_COUNTER, intruction);
-		emulator->cpu.bus->write16(INITIAL_PROGRAM_COUNTER + 1, memoryLocation);
-		emulator->cpu.bus->write(memoryLocation, memoryValue);
+		emulator->bus.write(INITIAL_PROGRAM_COUNTER, intruction);
+		emulator->bus.write16(INITIAL_PROGRAM_COUNTER + 1, memoryLocation);
+		emulator->bus.write(memoryLocation, memoryValue);
 		emulator->cpu.tick();
 
 		EXPECT_EQ(emulator->cpu.registers.getA(), memoryValue);
@@ -111,8 +111,8 @@ namespace InstructionsTests {
 		u16 targetLocation = 0x214;
 
 		emulator->cpu.registers.setPC(startingLocation);
-		emulator->cpu.bus->write(startingLocation, jumpInstruction);
-		emulator->cpu.bus->write(startingLocation + 1, offset);
+		emulator->bus.write(startingLocation, jumpInstruction);
+		emulator->bus.write(startingLocation + 1, offset);
 		emulator->cpu.tick();
 
 		EXPECT_EQ(emulator->cpu.registers.getPC(), targetLocation);
@@ -129,8 +129,8 @@ namespace InstructionsTests {
 
 		emulator->cpu.registers.setFlag(Z_FLAG, true);
 		emulator->cpu.registers.setPC(startingLocation);
-		emulator->cpu.bus->write(startingLocation, jumpInstruction);
-		emulator->cpu.bus->write(startingLocation + 1, offset);
+		emulator->bus.write(startingLocation, jumpInstruction);
+		emulator->bus.write(startingLocation + 1, offset);
 		emulator->cpu.tick();
 
 		EXPECT_EQ(emulator->cpu.registers.getPC(), noJumpTargetLocation);
@@ -146,8 +146,8 @@ namespace InstructionsTests {
 		u16 value = 0x28;
 
 		emulator->cpu.registers.setA(value);
-		emulator->cpu.bus->write(INITIAL_PROGRAM_COUNTER, loadInstruction);
-		emulator->cpu.bus->write(INITIAL_PROGRAM_COUNTER + 1, immediateDataLocation);
+		emulator->bus.write(INITIAL_PROGRAM_COUNTER, loadInstruction);
+		emulator->bus.write(INITIAL_PROGRAM_COUNTER + 1, immediateDataLocation);
 		emulator->cpu.tick();
 
 		EXPECT_EQ(emulator->bus.read(targetLocation), value);
@@ -163,11 +163,27 @@ namespace InstructionsTests {
 		u16 value = 0x28;
 
 		emulator->bus.write(targetLocation, value);
-		emulator->cpu.bus->write(INITIAL_PROGRAM_COUNTER, loadInstruction);
-		emulator->cpu.bus->write(INITIAL_PROGRAM_COUNTER + 1, immediateDataLocation);
+		emulator->bus.write(INITIAL_PROGRAM_COUNTER, loadInstruction);
+		emulator->bus.write(INITIAL_PROGRAM_COUNTER + 1, immediateDataLocation);
 		emulator->cpu.tick();
 
 		EXPECT_EQ(emulator->cpu.registers.getA(), value);
+
+		delete emulator;
+	}
+
+	TEST(LD_mem_HL_d8, Load) {
+		Emulator* emulator = TestUtils::getEmulator();
+		u8 loadInstruction = 0x36;
+		u16 targetLocation = 0x1016;
+		u16 value = 0x27;
+
+		emulator->cpu.registers.setHL(targetLocation);
+		emulator->bus.write(INITIAL_PROGRAM_COUNTER, loadInstruction);
+		emulator->bus.write(INITIAL_PROGRAM_COUNTER + 1, value);
+		emulator->cpu.tick();
+
+		EXPECT_EQ(emulator->bus.read(targetLocation), value);
 
 		delete emulator;
 	}

@@ -168,6 +168,7 @@ void Cpu::loadInstructions() {
     instructions[0xF3] = {1, 4, [this]() { interrupts = false; }};                                            // DI
     instructions[0xE0] = {2, 12, [this]() { bus->write(0xFF00 + immediateData(), registers.getA()); }};       // LDH (a8),A
     instructions[0xF0] = {2, 12, [this]() { registers.setA(bus->read(0xFF00 + immediateData())); }};          // LDH A,(a8)
+    instructions[0x36] = {2, 12, [this]() { bus->write(registers.getHL(), immediateData()); }};               // LD (HL),d8
 
     if (verbose) {
         std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;
