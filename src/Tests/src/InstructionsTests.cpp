@@ -143,7 +143,7 @@ namespace InstructionsTests {
 		u8 loadInstruction = 0xE0;
 		u8 immediateDataLocation = 0x27;
 		u16 targetLocation = 0xFF00 + immediateDataLocation;
-		u16 value = 0x28;
+		u8 value = 0x28;
 
 		emulator->cpu.registers.setA(value);
 		emulator->bus.write(INITIAL_PROGRAM_COUNTER, loadInstruction);
@@ -160,7 +160,7 @@ namespace InstructionsTests {
 		u8 loadInstruction = 0xF0;
 		u8 immediateDataLocation = 0x27;
 		u16 targetLocation = 0xFF00 + immediateDataLocation;
-		u16 value = 0x28;
+		u8 value = 0x28;
 
 		emulator->bus.write(targetLocation, value);
 		emulator->bus.write(INITIAL_PROGRAM_COUNTER, loadInstruction);
@@ -176,7 +176,7 @@ namespace InstructionsTests {
 		Emulator* emulator = TestUtils::getEmulator();
 		u8 loadInstruction = 0x36;
 		u16 targetLocation = 0x1016;
-		u16 value = 0x27;
+		u8 value = 0x27;
 
 		emulator->cpu.registers.setHL(targetLocation);
 		emulator->bus.write(INITIAL_PROGRAM_COUNTER, loadInstruction);
@@ -184,6 +184,20 @@ namespace InstructionsTests {
 		emulator->cpu.tick();
 
 		EXPECT_EQ(emulator->bus.read(targetLocation), value);
+
+		delete emulator;
+	}	
+
+	TEST(LD_SP_d16, Load) {
+		Emulator* emulator = TestUtils::getEmulator();
+		u8 loadInstruction = 0x31;
+		u16 value = 0x1234;
+
+		emulator->bus.write(INITIAL_PROGRAM_COUNTER, loadInstruction);
+		emulator->bus.write16(INITIAL_PROGRAM_COUNTER + 1, value);
+		emulator->cpu.tick();
+
+		EXPECT_EQ(emulator->cpu.registers.getSP(), value);
 
 		delete emulator;
 	}
