@@ -200,5 +200,67 @@ namespace InstructionsTests {
 		EXPECT_EQ(emulator->cpu.registers.getSP(), value);
 
 		delete emulator;
+	}	
+
+	TEST(LD_A_mem_HL_inc, Load) {
+		Emulator* emulator = TestUtils::getEmulator();
+		u8 loadInstruction = 0x2A;
+		u16 targetLocation = 0x1234;
+		u8 value = 0x27;
+
+		emulator->cpu.registers.setHL(targetLocation);
+		emulator->bus.write(INITIAL_PROGRAM_COUNTER, loadInstruction);
+		emulator->bus.write(targetLocation, value);
+		emulator->cpu.tick();
+
+		EXPECT_EQ(emulator->cpu.registers.getA(), value);
+
+		delete emulator;
+	}	
+
+	TEST(LD_A_mem_HL_inc, Increment) {
+		Emulator* emulator = TestUtils::getEmulator();
+		u8 loadInstruction = 0x2A;
+		u16 targetValue = 0x1234;
+
+		emulator->cpu.registers.setHL(targetValue - 1);
+		emulator->bus.write(INITIAL_PROGRAM_COUNTER, loadInstruction);
+		emulator->cpu.tick();
+
+		EXPECT_EQ(emulator->cpu.registers.getHL(), targetValue);
+
+		delete emulator;
+	}
+
+	TEST(LDH_mem_C_A, Load) {
+		Emulator* emulator = TestUtils::getEmulator();
+		u8 loadInstruction = 0xE2;
+		u8 dataLocation = 0x27;
+		u16 targetLocation = 0xFF00 + dataLocation;
+		u8 value = 0x28;
+
+		emulator->cpu.registers.setA(value);
+		emulator->cpu.registers.setC(dataLocation);
+		emulator->bus.write(INITIAL_PROGRAM_COUNTER, loadInstruction);
+		emulator->cpu.tick();
+
+		EXPECT_EQ(emulator->bus.read(targetLocation), value);
+
+		delete emulator;
+	}
+
+	TEST(INC_C, Load) {
+		Emulator* emulator = TestUtils::getEmulator();
+		u8 incrementInstruction = 0x0C;
+		u8 value = 0x27;
+		u8 targetValue = 0x28;
+
+		emulator->cpu.registers.setC(value);
+		emulator->bus.write(INITIAL_PROGRAM_COUNTER, incrementInstruction);
+		emulator->cpu.tick();
+
+		EXPECT_EQ(emulator->cpu.registers.getC(), targetValue);
+
+		delete emulator;
 	}
 }
