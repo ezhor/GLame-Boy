@@ -14,7 +14,7 @@ public:
 	GLFWwindow* window = nullptr;
 	u8 texture[SCREEN_WIDTH * SCREEN_HEIGHT * 3] = {};
 
-	void init();
+	void init(u16 instructionsCount);
 	void draw();
 	void sendTextureData();
 

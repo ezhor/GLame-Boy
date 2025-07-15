@@ -8,7 +8,7 @@ void Emulator::init()
 	//bus.load("D:\\Code\\GameBoy\\1.HelloWorld\\out\\hello-world.gb");
 	bus.load("D:\\Code\\tetris.gb");
 	cpu.loadInstructions();
-	renderer.init();
+	renderer.init(cpu.instructionsCount());
 	ppu.init();
 }
 

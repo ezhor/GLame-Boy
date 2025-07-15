@@ -1,4 +1,5 @@
 #include <iostream>
+#include <format>
 #include "Renderer.h"
 #include "Common.h"
 
@@ -26,12 +27,14 @@ void framebufferSizeCallback(GLFWwindow* window, int windowWidth, int windowHeig
 	}
 }
 
-void Renderer::init() {
+void Renderer::init(u16 instructionsCount) {
+	std::string title = std::format("GLame Boy ({}/512 instructions implemented)", instructionsCount);
+
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	window = glfwCreateWindow(SCALED_SCREEN_WIDTH, SCALED_SCREEN_HEIGHT, "GLame Boy", NULL, NULL);
+	window = glfwCreateWindow(SCALED_SCREEN_WIDTH, SCALED_SCREEN_HEIGHT, title.c_str(), NULL, NULL);
 
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;

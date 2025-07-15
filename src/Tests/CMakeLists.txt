@@ -1,12 +1,13 @@
 project(Tests)
 
 add_executable(${PROJECT_NAME}
-        ./include/TestUtils.h
-        ./src/TestUtils.cpp
-        ./src/EmulatorTests.cpp
-        ./src/InstructionsTests.cpp
-        ./src/InstructionsTests_POP.cpp
-        ./src/InstructionsTests_PUSH.cpp
+        include/TestUtils.h
+        src/TestUtils.cpp
+        src/EmulatorTests.cpp
+        src/InstructionsTests.cpp
+        src/InstructionsTests_POP.cpp
+        src/InstructionsTests_PUSH.cpp
+        src/InstructionsTests_CALL.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ./include)

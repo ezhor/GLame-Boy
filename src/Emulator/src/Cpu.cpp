@@ -138,6 +138,19 @@ void Cpu::push(u16 value) {
     bus->write16(registers.getSP(), value);
 }
 
+void Cpu::call(u8 flag, bool opposite) {
+    if (registers.getFlag(flag) != opposite) {
+        registers.decrementSP(2);
+        bus->write16(registers.getSP(), registers.getPC() + 3);
+        registers.setPC(immediateData16());
+        jumped = true;
+    }
+}
+
+void Cpu::call(u8 flag) {
+    call(flag, false);
+}
+
 
 void Cpu::loadInstructions() {
     // Hello World
@@ -199,6 +212,13 @@ void Cpu::loadInstructions() {
     instructions[0xD5] = {1, 16, 16, [this]() { push(registers.getDE()); }}; // PUSH DE
     instructions[0xE5] = {1, 16, 16, [this]() { push(registers.getHL()); }}; // PUSH HL
     instructions[0xF5] = {1, 16, 16, [this]() { push(registers.getAF()); }}; // PUSH AF
+
+    // CALL
+    instructions[0xC4] = {3, 24, 12, [this]() { call(Z_FLAG, true); }}; // CALL NZ,a16
+    instructions[0xCC] = {3, 24, 12, [this]() { call(Z_FLAG); }}; // CALL Z,a16
+    instructions[0xCD] = {3, 24, 12, [this]() { call(NO_FLAG); }}; // CALL a16
+    instructions[0xD4] = {3, 24, 12, [this]() { call(C_FLAG, true); }}; // CALL NC,a16
+    instructions[0xDC] = {3, 24, 12, [this]() { call(C_FLAG); }}; // CALL C,a16
 
     if (verbose) {
         std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;

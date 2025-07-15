@@ -16,7 +16,8 @@ class Cpu
 {
 	struct Instruction {
 		int lenght = 0;
-		int cycles = 0;
+		int cyclesJump = 0;
+		int cyclesDefault = 0;
 		std::function<void()> implementation;
 	};
 
@@ -31,12 +32,12 @@ public:
 	void loadInstructions();
 	void tick();
 	bool isRunning();
+	u16 instructionsCount();
 private:
 	Instruction instructions[512];
 	bool running = true;
 	bool interrupts = true;
 
-	u16 instructionsCount();
 	u8 immediateData();
 	u16 immediateData16();
 	
@@ -62,5 +63,7 @@ private:
 
 	u16 pop();
 	void push(u16 value);
+	void call(u8 flag, bool opposite);
+	void call(u8 flag);
 };
 
