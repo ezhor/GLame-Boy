@@ -31,6 +31,9 @@ public:
 
 	void setL(u8 value);
 
+	u16 getAF();
+	void setAF(u16 value);
+
 	u16 getBC();
 	void setBC(u16 value);
 	void decrementBC();
@@ -46,6 +49,7 @@ public:
 
 	u16 getSP();
 	void setSP(u16 value);
+	void incrementSP(u16 increment);
 
 	u16 getPC();
 	void setPC(u16 value);
@@ -56,14 +60,15 @@ public:
 	void setFlag(u8 flag, bool value);
 
 private:
-	u8 a;
-	u8 f;
+	u8* a;
+	u8* f;
 	u8* b;
 	u8* c;
 	u8* d;
 	u8* e;
 	u8* h;
 	u8* l;
+	u16 af;
 	u16 bc;
 	u16 de;
 	u16 hl;

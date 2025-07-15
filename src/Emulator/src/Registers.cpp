@@ -4,8 +4,9 @@
 Registers::Registers()
 {
 	instances++;
-	a = 0;
-	f = 0;
+	af = 0;
+	f = (u8*)&af;
+	a = &f[1];
 	bc = 0;
 	de = 0;
 	hl = 0;
@@ -21,22 +22,22 @@ Registers::Registers()
 
 u8 Registers::getA()
 {
-	return a;
+	return *a;
 }
 
 void Registers::setA(u8 value)
 {
-	a = value;
+	*a = value;
 }
 
 u8 Registers::getF()
 {
-	return f;
+	return *f;
 }
 
 void Registers::setF(u8 value)
 {
-	f = value;
+	*f = value;
 }
 
 u8 Registers::getB()
@@ -92,6 +93,15 @@ void Registers::setH(u8 value)
 void Registers::setL(u8 value)
 {
 	*l = value;
+}
+
+u16 Registers::getAF() {
+	return af;
+}
+
+
+void Registers::setAF(u16 value) {
+	af = value;
 }
 
 u16 Registers::getBC()
@@ -171,6 +181,11 @@ void Registers::incrementPC(u16 increment)
 void Registers::incrementPC()
 {
 	incrementPC(1);
+}
+
+void Registers::incrementSP(u16 increment)
+{
+	setSP(getSP() + increment);
 }
 
 bool Registers::getFlag(u8 flag)

@@ -59,5 +59,7 @@ private:
 	void jump(u8 flag);
 	void jumpRelative(u8 flag, bool opposite);
 	void jumpRelative(u8 flag);
+
+	u16 pop();
 };
 

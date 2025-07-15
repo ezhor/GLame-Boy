@@ -127,53 +127,67 @@ u16 Cpu::add16(u16 a, u16 b) {
     return a;
 }
 
+u16 Cpu::pop() {
+    u16 value = bus->read16(registers.getSP());
+    registers.incrementSP(2);
+    return value;
+}
+
+
 void Cpu::loadInstructions() {
     // Hello World
-    instructions[0x00] = {1, 4, []() { ; }};                                                      // NOP
-    instructions[0xC3] = {3, 16, [this]() { jump(NO_FLAG); }};                                    // JP a16
-    instructions[0x3E] = {2, 8, [this]() { registers.setA(immediateData()); }};                   // LD A,d8
-    instructions[0xEA] = {3, 16, [this]() { bus->write(immediateData16(), registers.getA()); }};  // LD (a16),A
-    instructions[0xFA] = {3, 16, [this]() { registers.setA(bus->read(immediateData16())); }};     // LD A,(a16)
-    instructions[0xFE] = {2, 8, [this]() { cp(immediateData()); }};                               // CP d8
-    instructions[0xDA] = {3, 8, [this]() { jump(C_FLAG); }};                                      // JP C,a16
-    instructions[0x01] = {3, 16, [this]() { registers.setBC(immediateData16()); }};               // LD BC,d16
-    instructions[0x11] = {3, 12, [this]() { registers.setDE(immediateData16()); }};               // LD DE,d16
-    instructions[0x21] = {3, 12, [this]() { registers.setHL(immediateData16()); }};               // LD HL,d16
-    instructions[0x1A] = {1, 8, [this]() { registers.setA(bus->read(registers.getDE())); }};      // LD A,(DE)
-    instructions[0x22] = {1, 8, [this]() { bus->write(registers.getHLI(), registers.getA()); }};  // LD (HL+),A
-    instructions[0x13] = {1, 8, [this]() { registers.incrementDE(); }};                           // INC DE
-    instructions[0x0B] = {1, 8, [this]() { registers.decrementBC(); }};                           // DEC BC
-    instructions[0x78] = {1, 4, [this]() { registers.setA(registers.getB()); }};                  // LD A,B
-    instructions[0xB1] = {1, 4, [this]() { logicOr(registers.getC()); }};                         // OR C
-    instructions[0xC2] = {3, 16, [this]() { jump(Z_FLAG, true); }};                               // JP NZ,a16
+    instructions[0x00] = {1, 4, []() { ; }}; // NOP
+    instructions[0xC3] = {3, 16, [this]() { jump(NO_FLAG); }}; // JP a16
+    instructions[0x3E] = {2, 8, [this]() { registers.setA(immediateData()); }}; // LD A,d8
+    instructions[0xEA] = {3, 16, [this]() { bus->write(immediateData16(), registers.getA()); }}; // LD (a16),A
+    instructions[0xFA] = {3, 16, [this]() { registers.setA(bus->read(immediateData16())); }}; // LD A,(a16)
+    instructions[0xFE] = {2, 8, [this]() { cp(immediateData()); }}; // CP d8
+    instructions[0xDA] = {3, 8, [this]() { jump(C_FLAG); }}; // JP C,a16
+    instructions[0x01] = {3, 16, [this]() { registers.setBC(immediateData16()); }}; // LD BC,d16
+    instructions[0x11] = {3, 12, [this]() { registers.setDE(immediateData16()); }}; // LD DE,d16
+    instructions[0x21] = {3, 12, [this]() { registers.setHL(immediateData16()); }}; // LD HL,d16
+    instructions[0x1A] = {1, 8, [this]() { registers.setA(bus->read(registers.getDE())); }}; // LD A,(DE)
+    instructions[0x22] = {1, 8, [this]() { bus->write(registers.getHLI(), registers.getA()); }}; // LD (HL+),A
+    instructions[0x13] = {1, 8, [this]() { registers.incrementDE(); }}; // INC DE
+    instructions[0x0B] = {1, 8, [this]() { registers.decrementBC(); }}; // DEC BC
+    instructions[0x78] = {1, 4, [this]() { registers.setA(registers.getB()); }}; // LD A,B
+    instructions[0xB1] = {1, 4, [this]() { logicOr(registers.getC()); }}; // OR C
+    instructions[0xC2] = {3, 16, [this]() { jump(Z_FLAG, true); }}; // JP NZ,a16
+
     // Tetris
-    instructions[0xAF] = {1, 4, [this]() { logicXor(registers.getA()); }};                                    // XOR A
-    instructions[0x0E] = {2, 8, [this]() { registers.setC(immediateData()); }};                               // LD C,d8
-    instructions[0x06] = {2, 8, [this]() { registers.setB(immediateData()); }};                               // LD B,d8
-    instructions[0x32] = {1, 8, [this]() { bus->write(registers.getHLD(), registers.getA()); }};              // LD (HL-),A
-    instructions[0x05] = {1, 4, [this]() { registers.setB(decrement(registers.getB())); }};                   // DEC B
-    instructions[0x20] = {2, 12, [this]() { jumpRelative(Z_FLAG, true); }};                                   // JR NZ,r8
-    instructions[0x1D] = {1, 4, [this]() { registers.setE(decrement(registers.getE())); }};                   // DEC E
-    instructions[0x16] = {2, 8, [this]() { registers.setD(immediateData()); }};                               // LD D,d8
-    instructions[0x1F] = {1, 4, [this]() { registers.setA(rotateRight(registers.getA())); }};                 // RRA
-    instructions[0x25] = {1, 4, [this]() { registers.setH(decrement(registers.getH())); }};                   // DEC H
-    instructions[0x15] = {1, 4, [this]() { registers.setD(decrement(registers.getD())); }};                   // DEC D
-    instructions[0xB0] = {1, 4, [this]() { logicOr(registers.getB()); }};                                     // OR B
-    instructions[0x14] = {1, 4, [this]() { registers.setD(increment(registers.getD())); }};                   // INC D
-    instructions[0x7B] = {1, 4, [this]() { registers.setA(registers.getE()); }};                              // LD A,E
-    instructions[0xBF] = {1, 4, [this]() { cp(registers.getA()); }};                                          // CP A
-    instructions[0x29] = {1, 8, [this]() { registers.setHL(add16(registers.getHL(), registers.getHL())); }};  // ADD HL,HL
-    instructions[0x19] = {1, 8, [this]() { registers.setHL(add16(registers.getHL(), registers.getDE())); }};  // ADD HL,DE
-    instructions[0x77] = {1, 8, [this]() { bus->write(registers.getHL(), registers.getA()); }};               // LD (HL),A
-    instructions[0x0D] = {1, 4, [this]() { registers.setC(decrement(registers.getC())); }};                   // DEC C
-    instructions[0xF3] = {1, 4, [this]() { interrupts = false; }};                                            // DI
-    instructions[0xE0] = {2, 12, [this]() { bus->write(0xFF00 + immediateData(), registers.getA()); }};       // LDH (a8),A
-    instructions[0xF0] = {2, 12, [this]() { registers.setA(bus->read(0xFF00 + immediateData())); }};          // LDH A,(a8)
-    instructions[0x36] = {2, 12, [this]() { bus->write(registers.getHL(), immediateData()); }};               // LD (HL),d8
-    instructions[0x31] = {3, 12, [this]() { registers.setSP(immediateData16()); }};                           // LD SP,d16
-    instructions[0x2A] = {1, 8, [this]() { registers.setA(bus->read(registers.getHLI())); }};                 // LD A,(HL+)
-    instructions[0xE2] = {1, 8, [this]() { bus->write(0xFF00 + registers.getC(), registers.getA()); }};       // LDH (C), A
-    instructions[0x0C] = {1, 4, [this]() { registers.setC(increment(registers.getC())); }};                   // INC C
+    instructions[0xAF] = {1, 4, [this]() { logicXor(registers.getA()); }}; // XOR A
+    instructions[0x0E] = {2, 8, [this]() { registers.setC(immediateData()); }}; // LD C,d8
+    instructions[0x06] = {2, 8, [this]() { registers.setB(immediateData()); }}; // LD B,d8
+    instructions[0x32] = {1, 8, [this]() { bus->write(registers.getHLD(), registers.getA()); }}; // LD (HL-),A
+    instructions[0x05] = {1, 4, [this]() { registers.setB(decrement(registers.getB())); }}; // DEC B
+    instructions[0x20] = {2, 12, [this]() { jumpRelative(Z_FLAG, true); }}; // JR NZ,r8
+    instructions[0x1D] = {1, 4, [this]() { registers.setE(decrement(registers.getE())); }}; // DEC E
+    instructions[0x16] = {2, 8, [this]() { registers.setD(immediateData()); }}; // LD D,d8
+    instructions[0x1F] = {1, 4, [this]() { registers.setA(rotateRight(registers.getA())); }}; // RRA
+    instructions[0x25] = {1, 4, [this]() { registers.setH(decrement(registers.getH())); }}; // DEC H
+    instructions[0x15] = {1, 4, [this]() { registers.setD(decrement(registers.getD())); }}; // DEC D
+    instructions[0xB0] = {1, 4, [this]() { logicOr(registers.getB()); }}; // OR B
+    instructions[0x14] = {1, 4, [this]() { registers.setD(increment(registers.getD())); }}; // INC D
+    instructions[0x7B] = {1, 4, [this]() { registers.setA(registers.getE()); }}; // LD A,E
+    instructions[0xBF] = {1, 4, [this]() { cp(registers.getA()); }}; // CP A
+    instructions[0x29] = {1, 8, [this]() { registers.setHL(add16(registers.getHL(), registers.getHL())); }}; // ADD HL,HL
+    instructions[0x19] = {1, 8, [this]() { registers.setHL(add16(registers.getHL(), registers.getDE())); }}; // ADD HL,DE
+    instructions[0x77] = {1, 8, [this]() { bus->write(registers.getHL(), registers.getA()); }}; // LD (HL),A
+    instructions[0x0D] = {1, 4, [this]() { registers.setC(decrement(registers.getC())); }}; // DEC C
+    instructions[0xF3] = {1, 4, [this]() { interrupts = false; }}; // DI
+    instructions[0xE0] = {2, 12, [this]() { bus->write(0xFF00 + immediateData(), registers.getA()); }}; // LDH (a8),A
+    instructions[0xF0] = {2, 12, [this]() { registers.setA(bus->read(0xFF00 + immediateData())); }}; // LDH A,(a8)
+    instructions[0x36] = {2, 12, [this]() { bus->write(registers.getHL(), immediateData()); }}; // LD (HL),d8
+    instructions[0x31] = {3, 12, [this]() { registers.setSP(immediateData16()); }}; // LD SP,d16
+    instructions[0x2A] = {1, 8, [this]() { registers.setA(bus->read(registers.getHLI())); }}; // LD A,(HL+)
+    instructions[0xE2] = {1, 8, [this]() { bus->write(0xFF00 + registers.getC(), registers.getA()); }}; // LDH (C), A
+    instructions[0x0C] = {1, 4, [this]() { registers.setC(increment(registers.getC())); }}; // INC C
+
+    // POP
+    instructions[0xC1] = {1, 12, [this]() { registers.setBC(pop()); }}; // POP BC
+    instructions[0xD1] = {1, 12, [this]() { registers.setDE(pop()); }}; // POP DE
+    instructions[0xE1] = {1, 12, [this]() { registers.setHL(pop()); }}; // POP HL
+    instructions[0xF1] = {1, 12, [this]() { registers.setAF(pop()); }}; // POP AF
 
     if (verbose) {
         std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;
@@ -196,8 +210,9 @@ void Cpu::tick() {
         Instruction instruction = instructions[opcode];
 
         if (verbose) {
-            std::cout << "Program Counter: " << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)registers.getPC()
-                      << " -> Instruction: 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode;
+            std::cout << "Program Counter: " << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)
+                    registers.getPC()
+                    << " -> Instruction: 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int) opcode;
         }
 
         if (instruction.implementation != nullptr) {
@@ -214,7 +229,8 @@ void Cpu::tick() {
         } else {
             running = false;
             std::cout << std::endl
-                      << "ERROR: INSTRUCTION NOT IMPLEMENTED (0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)opcode << ")" << std::endl;
+                    << "ERROR: INSTRUCTION NOT IMPLEMENTED (0x" << std::setfill('0') << std::setw(2) << std::hex << (
+                        unsigned int) opcode << ")" << std::endl;
         }
     }
 }
