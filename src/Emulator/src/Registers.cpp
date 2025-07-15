@@ -188,6 +188,10 @@ void Registers::incrementSP(u16 increment)
 	setSP(getSP() + increment);
 }
 
+void Registers::decrementSP(u16 decrement) {
+	setSP(getSP() - decrement);
+}
+
 bool Registers::getFlag(u8 flag)
 {
 	return (getF() & flag) == flag;

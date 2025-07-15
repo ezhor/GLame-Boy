@@ -50,6 +50,7 @@ public:
 	u16 getSP();
 	void setSP(u16 value);
 	void incrementSP(u16 increment);
+	void decrementSP(u16 decrement);
 
 	u16 getPC();
 	void setPC(u16 value);

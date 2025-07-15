@@ -133,6 +133,11 @@ u16 Cpu::pop() {
     return value;
 }
 
+void Cpu::push(u16 value) {
+    registers.decrementSP(2);
+    bus->write16(registers.getSP(), value);
+}
+
 
 void Cpu::loadInstructions() {
     // Hello World
@@ -188,6 +193,12 @@ void Cpu::loadInstructions() {
     instructions[0xD1] = {1, 12, [this]() { registers.setDE(pop()); }}; // POP DE
     instructions[0xE1] = {1, 12, [this]() { registers.setHL(pop()); }}; // POP HL
     instructions[0xF1] = {1, 12, [this]() { registers.setAF(pop()); }}; // POP AF
+
+    // PUSH
+    instructions[0xC5] = {1, 16, [this]() { push(registers.getBC()); }}; // PUSH BC
+    instructions[0xD5] = {1, 16, [this]() { push(registers.getDE()); }}; // PUSH DE
+    instructions[0xE5] = {1, 16, [this]() { push(registers.getHL()); }}; // PUSH HL
+    instructions[0xF5] = {1, 16, [this]() { push(registers.getAF()); }}; // PUSH AF
 
     if (verbose) {
         std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;

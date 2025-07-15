@@ -61,5 +61,6 @@ private:
 	void jumpRelative(u8 flag);
 
 	u16 pop();
+	void push(u16 value);
 };
 
