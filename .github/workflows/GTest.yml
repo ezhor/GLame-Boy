@@ -20,6 +20,6 @@ jobs:
     - name: Update Git submodules
       run: git submodule update
     - name: CMake config
-      run: cmake -S ./ -B build/
+      run: cmake -S ./ -B build/ -DTESTS=True
     - name: CMake build
       run: cmake --build build/
