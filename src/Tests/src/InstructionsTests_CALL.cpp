@@ -214,8 +214,6 @@ namespace InstructionsTests {
 		delete emulator;
 	}
 
-//---------------
-
 	TEST(CALL_NC_a16, Jump_StackPointer) {
 		Emulator* emulator = TestUtils::getEmulator();
 		u8 instruction = 0xD4;

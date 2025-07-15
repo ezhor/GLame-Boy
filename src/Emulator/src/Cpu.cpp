@@ -140,8 +140,7 @@ void Cpu::push(u16 value) {
 
 void Cpu::call(u8 flag, bool opposite) {
     if (registers.getFlag(flag) != opposite) {
-        registers.decrementSP(2);
-        bus->write16(registers.getSP(), registers.getPC() + 3);
+        push(registers.getPC() + 3);
         registers.setPC(immediateData16());
         jumped = true;
     }
@@ -149,6 +148,22 @@ void Cpu::call(u8 flag, bool opposite) {
 
 void Cpu::call(u8 flag) {
     call(flag, false);
+}
+
+void Cpu::ret(u8 flag, bool opposite) {
+    if (registers.getFlag(flag) != opposite) {
+        registers.setPC(pop());
+        jumped = true;
+    }
+}
+
+void Cpu::ret(u8 flag) {
+    ret(flag, false);
+}
+
+void Cpu::reti() {
+    ret(NO_FLAG);
+    interrupts = true;
 }
 
 
@@ -220,6 +235,14 @@ void Cpu::loadInstructions() {
     instructions[0xD4] = {3, 24, 12, [this]() { call(C_FLAG, true); }}; // CALL NC,a16
     instructions[0xDC] = {3, 24, 12, [this]() { call(C_FLAG); }}; // CALL C,a16
 
+    // RET
+    instructions[0xC0] = {1, 20, 8, [this]() { ret(Z_FLAG, true); }}; // RET NZ
+    instructions[0xC8] = {1, 20, 8, [this]() { ret(Z_FLAG); }}; // RET Z
+    instructions[0xC9] = {1, 16, 16, [this]() { ret(NO_FLAG); }}; // RET
+    instructions[0xD0] = {1, 20, 8, [this]() { ret(C_FLAG, true); }}; // RET NC
+    instructions[0xD8] = {1, 20, 8, [this]() { ret(C_FLAG); }}; // RET C
+    instructions[0xD9] = {1, 16, 16, [this]() { reti(); }}; // RETI
+
     if (verbose) {
         std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;
     }
@@ -233,6 +256,14 @@ u16 Cpu::instructionsCount() {
         }
     }
     return count;
+}
+
+bool Cpu::interruptsEnabled() {
+    return interrupts;
+}
+
+void Cpu::setInterrupts(bool value) {
+    interrupts = value;
 }
 
 void Cpu::tick() {

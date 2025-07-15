@@ -8,6 +8,7 @@ add_executable(${PROJECT_NAME}
         src/InstructionsTests_POP.cpp
         src/InstructionsTests_PUSH.cpp
         src/InstructionsTests_CALL.cpp
+        src/InstructionsTests_RET.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ./include)

@@ -25,7 +25,7 @@ public:
 	Cpu(Bus* bus);
 
 	inline static int instances = 0;
-	bool verbose = true;
+	bool verbose = false;
 	Registers registers;
 	Bus* bus;
 
@@ -33,6 +33,8 @@ public:
 	void tick();
 	bool isRunning();
 	u16 instructionsCount();
+	bool interruptsEnabled();
+	void setInterrupts(bool value);
 private:
 	Instruction instructions[512];
 	bool running = true;
@@ -65,5 +67,8 @@ private:
 	void push(u16 value);
 	void call(u8 flag, bool opposite);
 	void call(u8 flag);
+	void ret(u8 flag, bool opposite);
+	void ret(u8 flag);
+	void reti();
 };
 
