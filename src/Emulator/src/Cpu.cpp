@@ -10,6 +10,7 @@ Cpu::Cpu(Bus *bus) {
     instances++;
     this->bus = bus;
     registers.setPC(INITIAL_PROGRAM_COUNTER);
+    registers.setSP(INITIAL_STACK_POINTER);
 }
 
 bool Cpu::isRunning() {

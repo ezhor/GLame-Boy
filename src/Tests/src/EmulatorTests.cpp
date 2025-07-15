@@ -57,10 +57,18 @@ namespace EmulatorTests {
 		delete emulator;
 	}
 
-	TEST(ProgramCounter, CorrectInitialValue) {
+	TEST(InitialValue, ProgramCounter) {
 		Emulator* emulator = TestUtils::getEmulator();
 
 		EXPECT_EQ(emulator->cpu.registers.getPC(), INITIAL_PROGRAM_COUNTER);
+
+		delete emulator;
+	}
+
+	TEST(InitialValue, StackPointer) {
+		Emulator* emulator = TestUtils::getEmulator();
+
+		EXPECT_EQ(emulator->cpu.registers.getSP(), INITIAL_STACK_POINTER);
 
 		delete emulator;
 	}
