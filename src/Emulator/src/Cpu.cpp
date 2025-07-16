@@ -169,7 +169,6 @@ void Cpu::reti() {
 
 void Cpu::loadInstructions() {
     // Hello World
-    instructions[0x00] = {1, 4, 4, []() { ; }}; // NOP
     instructions[0xC3] = {3, 16, 16, [this]() { jump(NO_FLAG); }}; // JP a16
     instructions[0x3E] = {2, 8, 8, [this]() { registers.setA(immediateData()); }}; // LD A,d8
     instructions[0xEA] = {3, 16, 16, [this]() { bus->write(immediateData16(), registers.getA()); }}; // LD (a16),A
@@ -207,7 +206,6 @@ void Cpu::loadInstructions() {
     instructions[0x19] = {1, 8, 8, [this]() { registers.setHL(add16(registers.getHL(), registers.getDE())); }}; // ADD HL,DE
     instructions[0x77] = {1, 8, 8, [this]() { bus->write(registers.getHL(), registers.getA()); }}; // LD (HL),A
     instructions[0x0D] = {1, 4, 4, [this]() { registers.setC(decrement(registers.getC())); }}; // DEC C
-    instructions[0xF3] = {1, 4, 4, [this]() { interrupts = false; }}; // DI
     instructions[0xE0] = {2, 12, 12, [this]() { bus->write(0xFF00 + immediateData(), registers.getA()); }}; // LDH (a8),A
     instructions[0xF0] = {2, 12, 12, [this]() { registers.setA(bus->read(0xFF00 + immediateData())); }}; // LDH A,(a8)
     instructions[0x36] = {2, 12, 12, [this]() { bus->write(registers.getHL(), immediateData()); }}; // LD (HL),d8
@@ -242,6 +240,11 @@ void Cpu::loadInstructions() {
     instructions[0xD0] = {1, 20, 8, [this]() { ret(C_FLAG, true); }}; // RET NC
     instructions[0xD8] = {1, 20, 8, [this]() { ret(C_FLAG); }}; // RET C
     instructions[0xD9] = {1, 16, 16, [this]() { reti(); }}; // RETI
+
+    // CONTROL
+    instructions[0x00] = {1, 4, 4, []() { ; }}; // NOP
+    instructions[0xF3] = {1, 4, 4, [this]() { interrupts = false; }}; // DI
+    instructions[0xFB] = {1, 4, 4, [this]() { interrupts = true; }}; // EI
 
     if (verbose) {
         std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;
