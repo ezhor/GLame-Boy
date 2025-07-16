@@ -246,6 +246,10 @@ void Cpu::loadInstructions() {
     instructions[0xF3] = {1, 4, 4, [this]() { interrupts = false; }}; // DI
     instructions[0xFB] = {1, 4, 4, [this]() { interrupts = true; }}; // EI
 
+    // COMPLEMENT
+    instructions[0x2F] = {1, 4, 4, [this]() { registers.setA(~registers.getA()); }}; // CPL
+    instructions[0x3F] = {1, 4, 4, [this]() { registers.setFlag(C_FLAG, !registers.getFlag(C_FLAG)); }}; // CCF
+
     if (verbose) {
         std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;
     }
