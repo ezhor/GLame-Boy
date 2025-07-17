@@ -5,6 +5,7 @@ add_executable(${PROJECT_NAME}
         src/TestUtils.cpp
         src/EmulatorTests.cpp
         src/InstructionsTests.cpp
+        src/InstructionsTests_AND.cpp
         src/InstructionsTests_POP.cpp
         src/InstructionsTests_PUSH.cpp
         src/InstructionsTests_CALL.cpp

@@ -71,6 +71,14 @@ void Cpu::logicOr(u8 value) {
     registers.setFlag(C_FLAG, false);
 }
 
+void Cpu::logicAnd(u8 value) {
+    registers.setA(registers.getA() & value);
+    registers.setFlag(Z_FLAG, registers.getA() == 0);
+    registers.setFlag(N_FLAG, false);
+    registers.setFlag(H_FLAG, true);
+    registers.setFlag(C_FLAG, false);
+}
+
 void Cpu::logicXor(u8 value) {
     registers.setA(registers.getA() ^ value);
     registers.setFlag(Z_FLAG, registers.getA() == 0);
@@ -226,6 +234,17 @@ void Cpu::loadInstructions() {
     instructions[0x2A] = {1, 8, 8, [this]() { registers.setA(bus->read(registers.getHLI())); }}; // LD A,(HL+)
     instructions[0xE2] = {1, 8, 8, [this]() { bus->write(0xFF00 + registers.getC(), registers.getA()); }}; // LDH (C), A
     instructions[0x0C] = {1, 4, 4, [this]() { registers.setC(increment(registers.getC())); }}; // INC C
+
+    // AND
+    instructions[0xA0] = {1, 4, 4, [this]() { logicAnd(registers.getB()); }}; // AND B
+    instructions[0xA1] = {1, 4, 4, [this]() { logicAnd(registers.getC()); }}; // AND C
+    instructions[0xA2] = {1, 4, 4, [this]() { logicAnd(registers.getD()); }}; // AND D
+    instructions[0xA3] = {1, 4, 4, [this]() { logicAnd(registers.getE()); }}; // AND E
+    instructions[0xA4] = {1, 4, 4, [this]() { logicAnd(registers.getH()); }}; // AND H
+    instructions[0xA5] = {1, 4, 4, [this]() { logicAnd(registers.getL()); }}; // AND L
+    instructions[0xA6] = {1, 8, 8, [this]() { logicAnd(bus->read(registers.getHL())); }}; // AND (HL)
+    instructions[0xA7] = {1, 4, 4, [this]() { logicAnd(registers.getA()); }}; // AND A
+    instructions[0xE6] = {2, 8, 8, [this]() { logicAnd(immediateData()); }}; // AND d8
 
     // POP
     instructions[0xC1] = {1, 12, 12, [this]() { registers.setBC(pop()); }}; // POP BC

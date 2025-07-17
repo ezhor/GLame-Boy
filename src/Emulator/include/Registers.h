@@ -29,6 +29,7 @@ public:
 	u8 getH();
 	void setH(u8 value);
 
+	u8 getL();
 	void setL(u8 value);
 
 	u16 getAF();

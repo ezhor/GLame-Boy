@@ -54,6 +54,7 @@ private:
 	u16 add16(u16 a, u16 b);
 
 	void logicOr(u8 value);
+	void logicAnd(u8 value);
 	void logicXor(u8 value);
 
 	u8 rotateRight(u8 value);
@@ -70,5 +71,8 @@ private:
 	void ret(u8 flag, bool opposite);
 	void ret(u8 flag);
 	void reti();
+
+	void complementAccumulator();
+	void complementCarryFlag();
 };
 
