@@ -3,7 +3,6 @@
 #include <iomanip>
 #include <iostream>
 
-u16 biggestPC = 0;
 bool jumped = false;
 
 Cpu::Cpu(Bus *bus) {
@@ -278,15 +277,12 @@ void Cpu::tick() {
         u8 opcode = bus->read(registers.getPC());
         Instruction instruction = instructions[opcode];
 
-        if (verbose) {
-            std::cout << "Program Counter: " << std::setfill('0') << std::setw(2) << std::hex << (unsigned int)
-                    registers.getPC()
-                    << " -> Instruction: 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int) opcode;
-        }
-
         if (instruction.implementation != nullptr) {
             if (verbose) {
-                std::cout << " -> OK" << std::endl;
+                std::cout
+                    << "0x" << std::setfill('0') << std::setw(4) << std::hex << (unsigned int)registers.getPC()
+                    << ": 0x" << std::setfill('0') << std::setw(2) << std::hex << (unsigned int) opcode
+                    << std::endl;
             }
 
             instruction.implementation();
@@ -298,8 +294,10 @@ void Cpu::tick() {
         } else {
             running = false;
             std::cout << std::endl
-                    << "ERROR: INSTRUCTION NOT IMPLEMENTED (0x" << std::setfill('0') << std::setw(2) << std::hex << (
-                        unsigned int) opcode << ")" << std::endl;
+                    << "ERROR: INSTRUCTION NOT IMPLEMENTED (0x"
+                    << std::setfill('0') << std::setw(4) << std::hex << std::uppercase << (unsigned int) registers.getPC()
+                    << ": 0x" << std::setfill('0') << std::setw(2) << std::hex << std::uppercase << (unsigned int) opcode
+                    << ")" << std::endl;
         }
     }
 }
