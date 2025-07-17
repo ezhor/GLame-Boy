@@ -185,6 +185,20 @@ void Cpu::complementCarryFlag() {
     registers.setFlag(H_FLAG, false);
 }
 
+u8 Cpu::swap(u8 value)
+{
+    u8 resultHigherNibble = value & LOWER_NIBBLE;
+    u8 resultLowerNibble = value >> 4;
+    u8 result = (resultHigherNibble << 4) + resultLowerNibble;
+
+    registers.setFlag(Z_FLAG, result == 0);
+    registers.setFlag(N_FLAG, false);
+    registers.setFlag(H_FLAG, false);
+    registers.setFlag(C_FLAG, false);
+
+    return result;
+}
+
 void Cpu::loadInstructions() {
     // Hello World
     instructions[0xC3] = {3, 16, 16, [this]() { jump(NO_FLAG); }}; // JP a16
@@ -281,6 +295,16 @@ void Cpu::loadInstructions() {
 
     // CB prefix
     instructions[0xCB] = {1, 4, 4, [this]() { cbOffset = CB_PREFIX_OFFSET; }}; // CB
+
+    // SWAP
+    instructions[0x130] = {2, 8, 8, [this]() { registers.setB(swap(registers.getB())); }}; // SWAP B
+    instructions[0x131] = {2, 8, 8, [this]() { registers.setB(swap(registers.getB())); }}; // SWAP C
+    instructions[0x132] = {2, 8, 8, [this]() { registers.setB(swap(registers.getB())); }}; // SWAP D
+    instructions[0x133] = {2, 8, 8, [this]() { registers.setB(swap(registers.getB())); }}; // SWAP E
+    instructions[0x134] = {2, 8, 8, [this]() { registers.setB(swap(registers.getB())); }}; // SWAP H
+    instructions[0x135] = {2, 8, 8, [this]() { registers.setB(swap(registers.getB())); }}; // SWAP L
+    instructions[0x136] = {2, 16, 16, [this]() { bus->write(registers.getHL(), swap(bus->read(registers.getHL()))); }}; // SWAP (HL)
+    instructions[0x137] = {2, 8, 8, [this]() { registers.setB(swap(registers.getB())); }}; // SWAP A
 
     if (verbose) {
         std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;

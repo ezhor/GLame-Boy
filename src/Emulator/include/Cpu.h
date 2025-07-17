@@ -76,5 +76,7 @@ private:
 
 	void complementAccumulator();
 	void complementCarryFlag();
+
+	u8 swap(u8 value);
 };
 
