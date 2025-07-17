@@ -64,6 +64,7 @@ namespace InstructionsTests {
 		u16 stackLocation = 0xFFFC;
 		u16 targetStackPointer = 0x0000;
 
+		emulator->bus.write16(stackLocation, targetStackPointer);
 		emulator->cpu.registers.setFlag(Z_FLAG, true);
 		emulator->bus.write(INITIAL_PROGRAM_COUNTER, instruction);
 		emulator->cpu.tick();
@@ -151,6 +152,7 @@ namespace InstructionsTests {
 		u16 stackLocation = 0xFFFC;
 		u16 targetStackPointer = 0x0000;
 
+		emulator->bus.write16(stackLocation, targetStackPointer);
 		emulator->bus.write(INITIAL_PROGRAM_COUNTER, instruction);
 		emulator->cpu.tick();
 
@@ -275,6 +277,7 @@ namespace InstructionsTests {
 		u16 stackLocation = 0xFFFC;
 		u16 targetStackPointer = 0x0000;
 
+		emulator->bus.write16(stackLocation, targetStackPointer);
 		emulator->cpu.registers.setFlag(C_FLAG, true);
 		emulator->bus.write(INITIAL_PROGRAM_COUNTER, instruction);
 		emulator->cpu.tick();
@@ -362,6 +365,7 @@ namespace InstructionsTests {
 		u16 stackLocation = 0xFFFC;
 		u16 targetStackPointer = 0x0000;
 
+		emulator->bus.write16(stackLocation, targetStackPointer);
 		emulator->bus.write(INITIAL_PROGRAM_COUNTER, instruction);
 		emulator->cpu.tick();
 
