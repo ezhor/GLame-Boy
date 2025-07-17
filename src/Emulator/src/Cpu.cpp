@@ -165,6 +165,20 @@ void Cpu::reti() {
     interrupts = true;
 }
 
+void Cpu::complementAccumulator() {
+    registers.setA(~registers.getA());
+
+    registers.setFlag(N_FLAG, true);
+    registers.setFlag(H_FLAG, true);
+}
+
+void Cpu::complementCarryFlag() {
+    registers.setFlag(C_FLAG, !registers.getFlag(C_FLAG));
+
+    registers.setFlag(N_FLAG, false);
+    registers.setFlag(H_FLAG, false);
+}
+
 
 void Cpu::loadInstructions() {
     // Hello World
@@ -246,8 +260,8 @@ void Cpu::loadInstructions() {
     instructions[0xFB] = {1, 4, 4, [this]() { interrupts = true; }}; // EI
 
     // COMPLEMENT
-    instructions[0x2F] = {1, 4, 4, [this]() { registers.setA(~registers.getA()); }}; // CPL
-    instructions[0x3F] = {1, 4, 4, [this]() { registers.setFlag(C_FLAG, !registers.getFlag(C_FLAG)); }}; // CCF
+    instructions[0x2F] = {1, 4, 4, [this]() { complementAccumulator(); }}; // CPL
+    instructions[0x3F] = {1, 4, 4, [this]() { complementCarryFlag(); }}; // CCF
 
     if (verbose) {
         std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;
