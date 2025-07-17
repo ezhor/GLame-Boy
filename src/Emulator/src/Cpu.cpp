@@ -298,13 +298,13 @@ void Cpu::loadInstructions() {
 
     // SWAP
     instructions[0x130] = {2, 8, 8, [this]() { registers.setB(swap(registers.getB())); }}; // SWAP B
-    instructions[0x131] = {2, 8, 8, [this]() { registers.setB(swap(registers.getB())); }}; // SWAP C
-    instructions[0x132] = {2, 8, 8, [this]() { registers.setB(swap(registers.getB())); }}; // SWAP D
-    instructions[0x133] = {2, 8, 8, [this]() { registers.setB(swap(registers.getB())); }}; // SWAP E
-    instructions[0x134] = {2, 8, 8, [this]() { registers.setB(swap(registers.getB())); }}; // SWAP H
-    instructions[0x135] = {2, 8, 8, [this]() { registers.setB(swap(registers.getB())); }}; // SWAP L
+    instructions[0x131] = {2, 8, 8, [this]() { registers.setC(swap(registers.getC())); }}; // SWAP C
+    instructions[0x132] = {2, 8, 8, [this]() { registers.setD(swap(registers.getD())); }}; // SWAP D
+    instructions[0x133] = {2, 8, 8, [this]() { registers.setE(swap(registers.getE())); }}; // SWAP E
+    instructions[0x134] = {2, 8, 8, [this]() { registers.setH(swap(registers.getH())); }}; // SWAP H
+    instructions[0x135] = {2, 8, 8, [this]() { registers.setL(swap(registers.getL())); }}; // SWAP L
     instructions[0x136] = {2, 16, 16, [this]() { bus->write(registers.getHL(), swap(bus->read(registers.getHL()))); }}; // SWAP (HL)
-    instructions[0x137] = {2, 8, 8, [this]() { registers.setB(swap(registers.getB())); }}; // SWAP A
+    instructions[0x137] = {2, 8, 8, [this]() { registers.setA(swap(registers.getA())); }}; // SWAP A
 
     if (verbose) {
         std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;
