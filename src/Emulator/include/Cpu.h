@@ -39,6 +39,8 @@ private:
 	Instruction instructions[512];
 	bool running = true;
 	bool interrupts = true;
+	bool jumped = false;
+	u16 cbOffset = 0;
 
 	u8 immediateData();
 	u16 immediateData16();

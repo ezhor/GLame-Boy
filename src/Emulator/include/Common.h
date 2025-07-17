@@ -3,6 +3,9 @@
 typedef unsigned char u8;
 typedef unsigned short u16;
 
+// CB
+#define CB_PREFIX_OFFSET 0x100
+
 // Screen
 #define SCREEN_SCALE 4
 #define SCREEN_WIDTH 160

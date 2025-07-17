@@ -3,8 +3,6 @@
 #include <iomanip>
 #include <iostream>
 
-bool jumped = false;
-
 Cpu::Cpu(Bus *bus) {
     instances++;
     this->bus = bus;
@@ -187,7 +185,6 @@ void Cpu::complementCarryFlag() {
     registers.setFlag(H_FLAG, false);
 }
 
-
 void Cpu::loadInstructions() {
     // Hello World
     instructions[0xC3] = {3, 16, 16, [this]() { jump(NO_FLAG); }}; // JP a16
@@ -273,14 +270,17 @@ void Cpu::loadInstructions() {
     instructions[0xD8] = {1, 20, 8, [this]() { ret(C_FLAG); }}; // RET C
     instructions[0xD9] = {1, 16, 16, [this]() { reti(); }}; // RETI
 
-    // CONTROL
+    // Control
     instructions[0x00] = {1, 4, 4, []() { ; }}; // NOP
     instructions[0xF3] = {1, 4, 4, [this]() { interrupts = false; }}; // DI
     instructions[0xFB] = {1, 4, 4, [this]() { interrupts = true; }}; // EI
 
-    // COMPLEMENT
+    // Complement
     instructions[0x2F] = {1, 4, 4, [this]() { complementAccumulator(); }}; // CPL
     instructions[0x3F] = {1, 4, 4, [this]() { complementCarryFlag(); }}; // CCF
+
+    // CB prefix
+    instructions[0xCB] = {1, 4, 4, [this]() { cbOffset = CB_PREFIX_OFFSET; }}; // CB
 
     if (verbose) {
         std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;
@@ -307,8 +307,10 @@ void Cpu::setInterrupts(bool value) {
 
 void Cpu::tick() {
     if (running) {
-        u8 opcode = bus->read(registers.getPC());
+        u16 opcode = cbOffset + bus->read(registers.getPC());
         Instruction instruction = instructions[opcode];
+        
+        cbOffset = 0;
 
         if (instruction.implementation != nullptr) {
             if (verbose) {
