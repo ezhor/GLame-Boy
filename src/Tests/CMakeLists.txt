@@ -13,6 +13,7 @@ add_executable(${PROJECT_NAME}
         src/InstructionsTests_CONTROL.cpp
         src/InstructionsTests_COMPLEMENT.cpp
         src/InstructionsTests_SWAP.cpp
+        src/InstructionsTests_LD.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ./include)

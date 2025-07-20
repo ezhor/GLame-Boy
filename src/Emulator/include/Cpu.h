@@ -46,6 +46,7 @@ private:
 	u16 immediateData16();
 	
 	signed char twosComplement(u8 value);
+	u16 signExtension(u8 value);
 
 	void cp(u8 value);
 
