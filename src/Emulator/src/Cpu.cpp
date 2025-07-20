@@ -32,6 +32,18 @@ u16 Cpu::signExtension(u8 value) {
     return static_cast<u16>(signed_value);
 }
 
+u16 Cpu::offsetAddition(u16 baseValue, u8 offset) {
+    u16 result = baseValue + signExtension(offset);
+    u8 lowerByte = baseValue & 0xFF;
+
+    registers.setFlag(Z_FLAG, 0);
+    registers.setFlag(N_FLAG, 0);
+    registers.setFlag(H_FLAG, (lowerByte & 0xF) + (offset & 0xF) > 0xF);
+    registers.setFlag(C_FLAG, static_cast<u16>(lowerByte) + static_cast<u16>(offset) > 0xFF);
+
+    return result;
+}
+
 void Cpu::cp(u8 value) {
     registers.setFlag(Z_FLAG, registers.getA() == value);
     registers.setFlag(N_FLAG, true);
@@ -336,7 +348,7 @@ void Cpu::loadInstructions() {
     instructions[0xE2] = {2, 8, 8, [this]() { bus->write(HRAM_LOCAITON_START + registers.getC(), registers.getA()); }}; // LD (C),A
     instructions[0xF2] = {2, 8, 8, [this]() { bus->write(HRAM_LOCAITON_START + registers.getA(), registers.getC()); }}; // LD (A),C
 
-    instructions[0xF8] = {2, 12, 12, [this]() { registers.setHL(registers.getSP() + signExtension(immediateData())); }}; // LD HL,SP+r8
+    instructions[0xF8] = {2, 12, 12, [this]() { registers.setHL(offsetAddition(registers.getSP(), immediateData())); }}; // LD HL,SP+r8
     instructions[0xF9] = {1, 8, 8, [this]() { registers.setSP(registers.getHL()); }}; // LD SP,HL
 
     instructions[0xEA] = {3, 16, 16, [this]() { bus->write(immediateData16(), registers.getA()); }}; // LD (a16),A

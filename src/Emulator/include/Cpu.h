@@ -48,6 +48,8 @@ private:
 	signed char twosComplement(u8 value);
 	u16 signExtension(u8 value);
 
+	u16 offsetAddition(u16 baseValue, u8 offset);
+
 	void cp(u8 value);
 
 	u8 increment(u8 value);
