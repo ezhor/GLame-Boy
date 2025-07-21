@@ -1411,7 +1411,7 @@ namespace InstructionsTests {
 		emulator->bus.write16(INITIAL_PROGRAM_COUNTER + 1, memoryLocation);
 		emulator->cpu.tick();
 
-		EXPECT_EQ(emulator->bus.read16(memoryLocation), value);
+		EXPECT_EQ(emulator->bus.read(memoryLocation), value);
 
 		delete emulator;
 	}
