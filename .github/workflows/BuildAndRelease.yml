@@ -13,10 +13,10 @@ jobs:
         include:
           - os: ubuntu-latest
             artifact_name: GLame-Boy-Linux
-            binary_path: "build/GLame Boy"
+            binary_path: "build/**/GLame Boy"
           - os: windows-latest
             artifact_name: GLame-Boy-Windows
-            binary_path: "build/Release/GLame Boy.exe"
+            binary_path: "build/**/GLame Boy.exe"
 
     runs-on: ${{ matrix.os }}
 
@@ -41,6 +41,15 @@ jobs:
       - name: Run GTest
         run: ctest --test-dir build/ --output-on-failure -C Release
 
+      - name: List build directory (Linux)
+        if: runner.os == 'Linux'
+        run: find build/ -type f
+
+      - name: List build directory (Windows)
+        if: runner.os == 'Windows'
+        run: Get-ChildItem -Path build -Recurse -File
+        shell: powershell
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -59,11 +68,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+          merge-multiple: true
 
       - name: Update Latest Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "artifacts/**/*"
+          artifacts: "artifacts/*"
           tag: "latest"
           name: "Latest Build"
           body: "Automated build triggered by commit ${{ github.sha }}."
