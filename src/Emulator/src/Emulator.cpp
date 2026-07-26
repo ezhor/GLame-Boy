@@ -1,12 +1,10 @@
 #include "Emulator.h"
 #include <GLFW/glfw3.h>
 #include <thread>
-#include <stdlib.h>
 
-void Emulator::init()
+void Emulator::init(const char* romPath)
 {
-	//bus.load("D:\\Code\\GameBoy\\1.HelloWorld\\out\\hello-world.gb");
-	bus.load("D:\\Code\\tetris.gb");
+	bus.load(romPath);
 	cpu.loadInstructions();
 	renderer.init(cpu.instructionsCount());
 	ppu.init();

@@ -1,3 +1,4 @@
+#pragma once
 #include "Cpu.h"
 #include "Renderer.h"
 #include "Ppu.h"
@@ -6,7 +7,7 @@
 class Emulator
 {
 public:
-	Emulator() :bus(), cpu(&bus), renderer(), ppu(&bus, &renderer) {
+	explicit Emulator() : cpu(&bus), ppu(&bus, &renderer) {
 		instances++;
 	}
 
@@ -16,6 +17,6 @@ public:
 	Renderer renderer;
 	Ppu ppu;
 
-	void init();
+	void init(const char* romPath);
 	void run(bool multithread, bool testMode);
 };
