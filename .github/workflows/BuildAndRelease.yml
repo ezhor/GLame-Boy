@@ -1,0 +1,73 @@
+name: Build & Release
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  Build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: GLame-Boy-Linux
+            binary_path: "build/GLame Boy"
+          - os: windows-latest
+            artifact_name: GLame-Boy-Windows
+            binary_path: "build/Release/GLame Boy.exe"
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Cache and Install Linux dependencies
+        if: runner.os == 'Linux'
+        uses: awalsh128/cache-apt-pkgs-action@v1
+        with:
+          packages: xorg-dev libglu1-mesa-dev
+          version: 1.0
+
+      - name: CMake config
+        run: cmake -S ./ -B build/ -DTESTS=True
+
+      - name: CMake build
+        run: cmake --build build/ --config Release
+
+      - name: Run GTest
+        run: ctest --test-dir build/ --output-on-failure -C Release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.binary_path }}
+
+  Release:
+    needs: Build
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Update Latest Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "artifacts/**/*"
+          tag: "latest"
+          name: "Latest Build"
+          body: "Automated build triggered by commit ${{ github.sha }}."
+          allowUpdates: true
+          recreateRelease: true
+          makeLatest: true
+          token: ${{ secrets.GITHUB_TOKEN }}
