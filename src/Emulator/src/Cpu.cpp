@@ -60,6 +60,16 @@ u8 Cpu::increment(u8 value) {
     return value;
 }
 
+u8 Cpu::incrementMemHL() {
+    u8 previousValue = bus->read(registers.getHL());
+    u8 value = bus->read(registers.getHL()) + 1;
+    bus->write(registers.getHL(), value);
+    registers.setFlag(Z_FLAG, value == 0);
+    registers.setFlag(N_FLAG, false);
+    registers.setFlag(H_FLAG, (value & LOWER_NIBBLE) < (previousValue & LOWER_NIBBLE));
+    return value;
+}
+
 u16 Cpu::increment16(u16 value) {
     u16 previousValue = value;
     value++;
@@ -221,7 +231,6 @@ void Cpu::loadInstructions() {
     instructions[0xC3] = {3, 16, 16, [this]() { jump(NO_FLAG); }}; // JP a16
     instructions[0xFE] = {2, 8, 8, [this]() { cp(immediateData()); }}; // CP d8
     instructions[0xDA] = {3, 16, 12, [this]() { jump(C_FLAG); }}; // JP C,a16
-    instructions[0x13] = {1, 8, 8, [this]() { registers.incrementDE(); }}; // INC DE
     instructions[0x0B] = {1, 8, 8, [this]() { registers.decrementBC(); }}; // DEC BC
     instructions[0xB1] = {1, 4, 4, [this]() { logicOr(registers.getC()); }}; // OR C
     instructions[0xC2] = {3, 16, 12, [this]() { jump(Z_FLAG, true); }}; // JP NZ,a16
@@ -235,15 +244,12 @@ void Cpu::loadInstructions() {
     instructions[0x25] = {1, 4, 4, [this]() { registers.setH(decrement(registers.getH())); }}; // DEC H
     instructions[0x15] = {1, 4, 4, [this]() { registers.setD(decrement(registers.getD())); }}; // DEC D
     instructions[0xB0] = {1, 4, 4, [this]() { logicOr(registers.getB()); }}; // OR B
-    instructions[0x14] = {1, 4, 4, [this]() { registers.setD(increment(registers.getD())); }}; // INC D
     instructions[0xBF] = {1, 4, 4, [this]() { cp(registers.getA()); }}; // CP A
     instructions[0x29] = {1, 8, 8, [this]() { registers.setHL(add16(registers.getHL(), registers.getHL())); }}; // ADD HL,HL
     instructions[0x19] = {1, 8, 8, [this]() { registers.setHL(add16(registers.getHL(), registers.getDE())); }}; // ADD HL,DE
     instructions[0x0D] = {1, 4, 4, [this]() { registers.setC(decrement(registers.getC())); }}; // DEC C
-    instructions[0x0C] = {1, 4, 4, [this]() { registers.setC(increment(registers.getC())); }}; // INC C
 
     // LD
-
     instructions[0x01] = {3, 12, 12, [this]() { registers.setBC(immediateData16()); }}; // LD BC,d16
     instructions[0x11] = {3, 12, 12, [this]() { registers.setDE(immediateData16()); }}; // LD DE,d16
     instructions[0x21] = {3, 12, 12, [this]() { registers.setHL(immediateData16()); }}; // LD HL,d16
@@ -413,6 +419,21 @@ void Cpu::loadInstructions() {
     instructions[0x135] = {2, 8, 8, [this]() { registers.setL(swap(registers.getL())); }}; // SWAP L
     instructions[0x136] = {2, 16, 16, [this]() { bus->write(registers.getHL(), swap(bus->read(registers.getHL()))); }}; // SWAP (HL)
     instructions[0x137] = {2, 8, 8, [this]() { registers.setA(swap(registers.getA())); }}; // SWAP A
+
+    // INC
+    instructions[0x04] = {1, 4, 4, [this]() { registers.setB(increment(registers.getB())); }}; // INC B
+    instructions[0x0C] = {1, 4, 4, [this]() { registers.setC(increment(registers.getC())); }}; // INC C
+    instructions[0x14] = {1, 4, 4, [this]() { registers.setD(increment(registers.getD())); }}; // INC D
+    instructions[0x1C] = {1, 4, 4, [this]() { registers.setE(increment(registers.getE())); }}; // INC E
+    instructions[0x24] = {1, 4, 4, [this]() { registers.setH(increment(registers.getH())); }}; // INC H
+    instructions[0x2C] = {1, 4, 4, [this]() { registers.setL(increment(registers.getL())); }}; // INC L
+    instructions[0x34] = {1, 12, 12, [this]() { incrementMemHL(); }}; // INC (HL)
+    instructions[0x3C] = {1, 4, 4, [this]() { registers.setA(increment(registers.getA())); }}; // INC A
+
+    instructions[0x03] = {1, 8, 8, [this]() { registers.incrementBC(); }}; // INC BC
+    instructions[0x13] = {1, 8, 8, [this]() { registers.incrementDE(); }}; // INC DE
+    instructions[0x23] = {1, 8, 8, [this]() { registers.incrementHL(); }}; // INC HL
+    instructions[0x33] = {1, 8, 8, [this]() { registers.incrementSP(1); }}; // INC SP
 
     if (verbose) {
         std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;

@@ -37,6 +37,7 @@ public:
 
 	u16 getBC();
 	void setBC(u16 value);
+	void incrementBC();
 	void decrementBC();
 
 	u16 getDE();
@@ -47,6 +48,7 @@ public:
 	u16 getHLI();
 	u16 getHLD();
 	void setHL(u16 value);
+	void incrementHL();
 
 	u16 getSP();
 	void setSP(u16 value);

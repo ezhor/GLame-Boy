@@ -53,6 +53,9 @@ private:
 	void cp(u8 value);
 
 	u8 increment(u8 value);
+
+	u8 incrementMemHL();
+
 	u16 increment16(u16 value);
 	u8 decrement(u8 value);
 

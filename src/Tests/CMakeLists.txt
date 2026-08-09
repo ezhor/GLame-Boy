@@ -14,6 +14,9 @@ add_executable(${PROJECT_NAME}
         src/InstructionsTests_COMPLEMENT.cpp
         src/InstructionsTests_SWAP.cpp
         src/InstructionsTests_LD.cpp
+        src/InstructionsTests_INC8.cpp
+        src/InstructionsTests_INC16.cpp
+        src/InstructionsTests_INC_Mem.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ./include)

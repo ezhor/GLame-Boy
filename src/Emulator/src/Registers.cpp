@@ -119,6 +119,10 @@ void Registers::setBC(u16 value)
 	bc = value;
 }
 
+void Registers::incrementBC() {
+	bc++;
+}
+
 void Registers::decrementBC()
 {
 	bc--;
@@ -156,6 +160,10 @@ u16 Registers::getHLD()
 void Registers::setHL(u16 value)
 {
 	hl = value;
+}
+
+void Registers::incrementHL() {
+	hl++;
 }
 
 u16 Registers::getSP()
