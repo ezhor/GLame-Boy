@@ -45,7 +45,7 @@ private:
 	u8 immediateData();
 	u16 immediateData16();
 	
-	signed char twosComplement(u8 value);
+	s8 twosComplement(u8 value);
 	u16 signExtension(u8 value);
 
 	u16 offsetAddition(u16 baseValue, u8 offset);
@@ -69,6 +69,9 @@ private:
 
 	void jump(u8 flag, bool opposite);
 	void jump(u8 flag);
+
+	void jumpRelative();
+
 	void jumpRelative(u8 flag, bool opposite);
 	void jumpRelative(u8 flag);
 

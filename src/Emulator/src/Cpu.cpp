@@ -22,13 +22,12 @@ u16 Cpu::immediateData16() {
     return bus->read16(registers.getPC() + 1);
 }
 
-signed char Cpu::twosComplement(u8 value) {
-    signed char signedValue = value;
-    return signedValue + 2;
+s8 Cpu::twosComplement(u8 value) {
+    return static_cast<s8>(value);
 }
 
 u16 Cpu::signExtension(u8 value) {
-    signed char signed_value = static_cast<signed char>(value);
+    s8 signed_value = static_cast<s8>(value);
     return static_cast<u16>(signed_value);
 }
 
@@ -138,11 +137,16 @@ void Cpu::jump(u8 flag) {
     jump(flag, false);
 }
 
+void Cpu::jumpRelative() {
+    u8 instruction = bus->read(registers.getPC());
+    u8 offset = instructions[instruction].lenght;
+    registers.setPC(registers.getPC() + twosComplement(immediateData()) + offset);
+    jumped = true;
+}
+
 void Cpu::jumpRelative(u8 flag, bool opposite) {
     if (registers.getFlag(flag) != opposite) {
-        signed char signedData = immediateData();
-        registers.setPC(registers.getPC() + twosComplement(immediateData()));
-        jumped = true;
+        jumpRelative();
     }
 }
 
@@ -238,7 +242,6 @@ void Cpu::loadInstructions() {
     // Tetris
     instructions[0xAF] = {1, 4, 4, [this]() { logicXor(registers.getA()); }}; // XOR A
     instructions[0x05] = {1, 4, 4, [this]() { registers.setB(decrement(registers.getB())); }}; // DEC B
-    instructions[0x20] = {2, 12, 8, [this]() { jumpRelative(Z_FLAG, true); }}; // JR NZ,r8
     instructions[0x1D] = {1, 4, 4, [this]() { registers.setE(decrement(registers.getE())); }}; // DEC E
     instructions[0x1F] = {1, 4, 4, [this]() { registers.setA(rotateRight(registers.getA())); }}; // RRA
     instructions[0x25] = {1, 4, 4, [this]() { registers.setH(decrement(registers.getH())); }}; // DEC H
@@ -434,6 +437,13 @@ void Cpu::loadInstructions() {
     instructions[0x13] = {1, 8, 8, [this]() { registers.incrementDE(); }}; // INC DE
     instructions[0x23] = {1, 8, 8, [this]() { registers.incrementHL(); }}; // INC HL
     instructions[0x33] = {1, 8, 8, [this]() { registers.incrementSP(1); }}; // INC SP
+
+    // JR
+    instructions[0x18] = {2, 12, 8, [this]() { jumpRelative(); }}; // JR r8
+    instructions[0x28] = {2, 12, 8, [this]() { jumpRelative(Z_FLAG); }}; // JR Z,r8
+    instructions[0x38] = {2, 12, 8, [this]() { jumpRelative(C_FLAG); }}; // JR C,r8
+    instructions[0x20] = {2, 12, 8, [this]() { jumpRelative(Z_FLAG, true); }}; // JR NZ,r8
+    instructions[0x30] = {2, 12, 8, [this]() { jumpRelative(C_FLAG, true); }}; // JR NC,r8
 
     if (verbose) {
         std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;
