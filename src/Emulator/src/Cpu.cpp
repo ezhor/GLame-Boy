@@ -240,7 +240,6 @@ void Cpu::loadInstructions() {
     instructions[0xC2] = {3, 16, 12, [this]() { jump(Z_FLAG, true); }}; // JP NZ,a16
 
     // Tetris
-    instructions[0xAF] = {1, 4, 4, [this]() { logicXor(registers.getA()); }}; // XOR A
     instructions[0x05] = {1, 4, 4, [this]() { registers.setB(decrement(registers.getB())); }}; // DEC B
     instructions[0x1D] = {1, 4, 4, [this]() { registers.setE(decrement(registers.getE())); }}; // DEC E
     instructions[0x1F] = {1, 4, 4, [this]() { registers.setA(rotateRight(registers.getA())); }}; // RRA
@@ -444,6 +443,17 @@ void Cpu::loadInstructions() {
     instructions[0x38] = {2, 12, 8, [this]() { jumpRelative(C_FLAG); }}; // JR C,r8
     instructions[0x20] = {2, 12, 8, [this]() { jumpRelative(Z_FLAG, true); }}; // JR NZ,r8
     instructions[0x30] = {2, 12, 8, [this]() { jumpRelative(C_FLAG, true); }}; // JR NC,r8
+
+    // XOR
+    instructions[0xA8] = {1, 4, 4, [this]() { logicXor(registers.getB()); }}; // XOR B
+    instructions[0xA9] = {1, 4, 4, [this]() { logicXor(registers.getC()); }}; // XOR C
+    instructions[0xAA] = {1, 4, 4, [this]() { logicXor(registers.getD()); }}; // XOR D
+    instructions[0xAB] = {1, 4, 4, [this]() { logicXor(registers.getE()); }}; // XOR E
+    instructions[0xAC] = {1, 4, 4, [this]() { logicXor(registers.getH()); }}; // XOR H
+    instructions[0xAD] = {1, 4, 4, [this]() { logicXor(registers.getL()); }}; // XOR L
+    instructions[0xAE] = {1, 4, 4, [this]() { logicXor(bus->read(registers.getHL())); }}; // XOR (HL)
+    instructions[0xAF] = {1, 4, 4, [this]() { logicXor(registers.getA()); }}; // XOR A
+    instructions[0xEE] = {1, 4, 4, [this]() { logicXor(immediateData()); }}; // XOR d8
 
     if (verbose) {
         std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;

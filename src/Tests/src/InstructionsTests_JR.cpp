@@ -20,7 +20,7 @@ protected:
     }
 };
 
-TEST_P(JrTest, Increment) {
+TEST_P(JrTest, Jump) {
     const auto& param = GetParam();
     emulator->cpu.registers.setF(param.flags);
     emulator->cpu.registers.setPC(param.initialPosition);
@@ -33,7 +33,7 @@ TEST_P(JrTest, Increment) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    INC,
+    JR,
     JrTest,
     ::testing::Values(
         JrTestParameters{"JR_r8_Jump", 0x18, 10, 500, 512, NO_FLAG},
