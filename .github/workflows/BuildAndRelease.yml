@@ -73,3 +73,17 @@ jobs:
           replacesArtifacts: true
           makeLatest: true
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate Tag Name
+        id: tag
+        run: echo "release_tag=build-$(date +'%Y%m%d-%H%M%S')-${{ github.sha }}" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "artifacts/**/*"
+          tag: ${{ steps.tag.outputs.release_tag }}
+          name: "Build ${{ steps.tag.outputs.release_tag }}"
+          body: "Automated build triggered by commit ${{ github.sha }}."
+          makeLatest: true              # Marca esta última versión creada como 'Latest' en la interfaz
+          token: ${{ secrets.GITHUB_TOKEN }}
