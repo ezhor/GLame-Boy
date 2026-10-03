@@ -75,6 +75,10 @@ private:
 	void jumpRelative(u8 flag, bool opposite);
 	void jumpRelative(u8 flag);
 
+	u8 add(u8 a, u8 b);
+
+	s16 addSigned16(u16 a, s16 b);
+
 	u16 pop();
 	void push(u16 value);
 	void call(u8 flag, bool opposite);

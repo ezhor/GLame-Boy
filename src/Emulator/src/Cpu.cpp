@@ -154,9 +154,29 @@ void Cpu::jumpRelative(u8 flag) {
     jumpRelative(flag, false);
 }
 
-u16 Cpu::add16(u16 a, u16 b) {
-    u16 previousA = a;
-    a = a + b;
+u8 Cpu::add(u8 a, const u8 b) {
+    const u8 previousA = a;
+    a += b;
+    registers.setFlag(Z_FLAG, a == 0);
+    registers.setFlag(N_FLAG, false);
+    registers.setFlag(H_FLAG, (a & LOWER_NIBBLE) < (previousA & LOWER_NIBBLE));
+    registers.setFlag(C_FLAG, a < previousA);
+    return a;
+}
+
+s16 Cpu::addSigned16(u16 a, const s16 b) {
+    const s16 previousA = a;
+    a += b;
+    registers.setFlag(Z_FLAG, false);
+    registers.setFlag(N_FLAG, false);
+    registers.setFlag(H_FLAG, (previousA & LOWER_NIBBLE) + (b & LOWER_NIBBLE) > LOWER_NIBBLE);
+    registers.setFlag(C_FLAG, (previousA & LOWER_BYTE) + b > LOWER_BYTE);
+    return a;
+}
+
+u16 Cpu::add16(u16 a, const u16 b) {
+    const u16 previousA = a;
+    a += b;
     registers.setFlag(N_FLAG, false);
     registers.setFlag(H_FLAG, (a & LOWER_NIBBLE) < (previousA & LOWER_NIBBLE));
     registers.setFlag(C_FLAG, a < previousA);
@@ -247,8 +267,6 @@ void Cpu::loadInstructions() {
     instructions[0x15] = {1, 4, 4, [this]() { registers.setD(decrement(registers.getD())); }}; // DEC D
     instructions[0xB0] = {1, 4, 4, [this]() { logicOr(registers.getB()); }}; // OR B
     instructions[0xBF] = {1, 4, 4, [this]() { cp(registers.getA()); }}; // CP A
-    instructions[0x29] = {1, 8, 8, [this]() { registers.setHL(add16(registers.getHL(), registers.getHL())); }}; // ADD HL,HL
-    instructions[0x19] = {1, 8, 8, [this]() { registers.setHL(add16(registers.getHL(), registers.getDE())); }}; // ADD HL,DE
     instructions[0x0D] = {1, 4, 4, [this]() { registers.setC(decrement(registers.getC())); }}; // DEC C
 
     // LD
@@ -454,6 +472,23 @@ void Cpu::loadInstructions() {
     instructions[0xAE] = {1, 4, 4, [this]() { logicXor(bus->read(registers.getHL())); }}; // XOR (HL)
     instructions[0xAF] = {1, 4, 4, [this]() { logicXor(registers.getA()); }}; // XOR A
     instructions[0xEE] = {1, 4, 4, [this]() { logicXor(immediateData()); }}; // XOR d8
+
+    // ADD
+    instructions[0x80] = {1, 4, 4, [this]() { registers.setA(add(registers.getA(), registers.getB())); }}; // ADD A,B
+    instructions[0x81] = {1, 4, 4, [this]() { registers.setA(add(registers.getA(), registers.getC())); }}; // ADD A,C
+    instructions[0x82] = {1, 4, 4, [this]() { registers.setA(add(registers.getA(), registers.getD())); }}; // ADD A,D
+    instructions[0x83] = {1, 4, 4, [this]() { registers.setA(add(registers.getA(), registers.getE())); }}; // ADD A,E
+    instructions[0x84] = {1, 4, 4, [this]() { registers.setA(add(registers.getA(), registers.getH())); }}; // ADD A,H
+    instructions[0x85] = {1, 4, 4, [this]() { registers.setA(add(registers.getA(), registers.getL())); }}; // ADD A,L
+    instructions[0x86] = {1, 8, 8, [this]() { registers.setA(add(registers.getA(), bus->read(registers.getHL()))); }}; // ADD A,(HL)
+    instructions[0x87] = {1, 4, 4, [this]() { registers.setA(add(registers.getA(), registers.getA())); }}; // ADD A,A
+    instructions[0xC6] = {2, 8, 8, [this]() { registers.setA(add(registers.getA(), immediateData())); }}; // ADD A,d8
+
+    instructions[0x09] = {1, 8, 8, [this]() { registers.setHL(add16(registers.getHL(), registers.getBC())); }}; // ADD HL,BC
+    instructions[0x19] = {1, 8, 8, [this]() { registers.setHL(add16(registers.getHL(), registers.getDE())); }}; // ADD HL,DE
+    instructions[0x29] = {1, 8, 8, [this]() { registers.setHL(add16(registers.getHL(), registers.getHL())); }}; // ADD HL,HL
+    instructions[0x39] = {1, 8, 8, [this]() { registers.setHL(add16(registers.getHL(), registers.getSP())); }}; // ADD HL,SP
+    instructions[0xE9] = {2, 16, 16, [this]() { registers.setSP(addSigned16(registers.getSP(), twosComplement(immediateData()))); }}; // ADD SP,r8
 
     if (verbose) {
         std::cout << instructionsCount() << "/512 instructions implemented" << std::endl;
